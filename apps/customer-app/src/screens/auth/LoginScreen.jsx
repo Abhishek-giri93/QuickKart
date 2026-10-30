@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity,
+  View, Text, TextInput, StyleSheet, TouchableOpacity,
   KeyboardAvoidingView, Platform, ScrollView, StatusBar,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
