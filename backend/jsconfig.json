@@ -1,0 +1,13 @@
+{
+  "exclude": ["node_modules"],
+  "include": ["src/**/*", "server.js"],
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2022",
+    "allowImportingTsExtensions": true,
+    "checkJs": true,
+    "allowJs": true
+  }
+}
+
