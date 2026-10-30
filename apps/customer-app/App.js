@@ -3,6 +3,8 @@ import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, StatusBar, Scro
 import HomeScreen from './src/screens/home/HomeScreen';
 import StoreDetailScreen from './src/screens/home/StoreDetailScreen';
 import CartScreen from './src/screens/cart/CartScreen';
+import LiveTrackingScreen from './src/screens/orders/LiveTrackingScreen';
+import ProfileScreen from './src/screens/profile/ProfileScreen';
 import LoginScreen from './src/screens/auth/LoginScreen';
 import SplashScreen from './src/screens/auth/SplashScreen';
 import { Colors } from './src/constants/colors';
@@ -55,6 +57,24 @@ export default function App() {
           </TouchableOpacity>
 
           <TouchableOpacity
+            style={[styles.previewBtn, currentScreen === 'Track' && styles.previewBtnActive]}
+            onPress={() => setCurrentScreen('Track')}
+          >
+            <Text style={[styles.previewBtnText, currentScreen === 'Track' && styles.previewBtnTextActive]}>
+              🛵 Live Track
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.previewBtn, currentScreen === 'Profile' && styles.previewBtnActive]}
+            onPress={() => setCurrentScreen('Profile')}
+          >
+            <Text style={[styles.previewBtnText, currentScreen === 'Profile' && styles.previewBtnTextActive]}>
+              👤 Profile
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             style={[styles.previewBtn, currentScreen === 'Login' && styles.previewBtnActive]}
             onPress={() => setCurrentScreen('Login')}
           >
@@ -101,7 +121,20 @@ export default function App() {
         {currentScreen === 'Cart' && (
           <CartScreen
             onBackToShopping={() => setCurrentScreen('Home')}
-            onOrderPlaced={() => setCurrentScreen('Home')}
+            onOrderPlaced={() => setCurrentScreen('Track')}
+          />
+        )}
+
+        {currentScreen === 'Track' && (
+          <LiveTrackingScreen
+            onBackToHome={() => setCurrentScreen('Home')}
+          />
+        )}
+
+        {currentScreen === 'Profile' && (
+          <ProfileScreen
+            onTrackOrder={() => setCurrentScreen('Track')}
+            onLogout={() => setCurrentScreen('Login')}
           />
         )}
 
