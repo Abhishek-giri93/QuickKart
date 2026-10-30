@@ -1,7 +1,4 @@
-// Customer App Constants — Colors (imported from design system)
-export { CustomerColors as Colors } from '../../../../docs/frontend/design-system/colors';
-
-// Or inline (use this when apps are independent):
+// Customer App Constants — Colors
 export const Colors = {
   primary: '#FF6B35',
   primaryLight: '#FF8C5A',

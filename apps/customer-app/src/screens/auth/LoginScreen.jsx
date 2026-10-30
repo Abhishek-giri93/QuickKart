@@ -29,8 +29,6 @@ const Input = ({ label, value, onChangeText, placeholder, secureTextEntry, keybo
   );
 };
 
-import { TextInput } from 'react-native';
-
 const LoginScreen = ({ navigation }) => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
