@@ -35,14 +35,16 @@ import authRouter from '../modules/auth/auth.routes.js';
 import customerRouter from '../modules/users/customer.routes.js';
 import sellerRouter from '../modules/users/seller.routes.js';
 import deliveryPartnerRouter from '../modules/users/deliveryPartner.routes.js';
+import categoryRouter from '../modules/categories/category.routes.js';
+import storeRouter from '../modules/stores/store.routes.js';
 
 router.use('/auth', authRouter);
 router.use('/customers', customerRouter);
 router.use('/sellers', sellerRouter);
 router.use('/delivery-partners', deliveryPartnerRouter);
+router.use('/categories', categoryRouter);
+router.use('/stores', storeRouter);
 
-// import storesRouter      from '../modules/stores/stores.routes.js';
-// import categoriesRouter  from '../modules/categories/categories.routes.js';
 // import productsRouter    from '../modules/products/products.routes.js';
 // import inventoryRouter   from '../modules/inventory/inventory.routes.js';
 // import cartRouter        from '../modules/cart/cart.routes.js';
