@@ -76,9 +76,10 @@ export const errorHandler = (err, req, res, next) => {
   }
 
   // --- Zod validation errors ---
-  if (err.name === 'ZodError') {
-    const errors = err.errors.map((e) => ({
-      field: e.path.join('.'),
+  if (err.name === 'ZodError' || err.issues) {
+    const rawIssues = err.issues || err.errors || [];
+    const errors = rawIssues.map((e) => ({
+      field: Array.isArray(e.path) ? e.path.join('.') : String(e.path || ''),
       message: e.message,
     }));
     return sendError(res, {

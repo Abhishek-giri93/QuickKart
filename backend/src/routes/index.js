@@ -30,9 +30,11 @@ router.get('/health', async (req, res) => {
   });
 });
 
-// ── Module Routes (uncomment as each module is implemented) ──────────────────
+// ── Module Routes ────────────────────────────────────────────────────────────
+import authRouter from '../modules/auth/auth.routes.js';
 
-// import authRouter        from '../modules/auth/auth.routes.js';
+router.use('/auth', authRouter);
+
 // import usersRouter       from '../modules/users/users.routes.js';
 // import storesRouter      from '../modules/stores/stores.routes.js';
 // import categoriesRouter  from '../modules/categories/categories.routes.js';
