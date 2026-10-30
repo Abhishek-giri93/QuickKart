@@ -32,10 +32,15 @@ router.get('/health', async (req, res) => {
 
 // ── Module Routes ────────────────────────────────────────────────────────────
 import authRouter from '../modules/auth/auth.routes.js';
+import customerRouter from '../modules/users/customer.routes.js';
+import sellerRouter from '../modules/users/seller.routes.js';
+import deliveryPartnerRouter from '../modules/users/deliveryPartner.routes.js';
 
 router.use('/auth', authRouter);
+router.use('/customers', customerRouter);
+router.use('/sellers', sellerRouter);
+router.use('/delivery-partners', deliveryPartnerRouter);
 
-// import usersRouter       from '../modules/users/users.routes.js';
 // import storesRouter      from '../modules/stores/stores.routes.js';
 // import categoriesRouter  from '../modules/categories/categories.routes.js';
 // import productsRouter    from '../modules/products/products.routes.js';
