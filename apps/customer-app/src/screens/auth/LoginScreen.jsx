@@ -10,6 +10,7 @@ import { FontSize, FontWeight } from '../../constants/typography';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { validatePhone, validateEmail, validatePassword } from '../../utils/validators';
+import { useAuthStore } from '../../store/authStore';
 
 const LoginScreen = ({ navigation, onLoginSuccess, onGoToRegister, onForgotPassword }) => {
   const [identifier, setIdentifier] = useState(''); // email or phone
@@ -47,14 +48,15 @@ const LoginScreen = ({ navigation, onLoginSuccess, onGoToRegister, onForgotPassw
     return Object.keys(newErrors).length === 0;
   };
 
+  const loginAction = useAuthStore((state) => state.loginAction);
+
   const handleLogin = async () => {
     setGeneralError('');
     if (!validateForm()) return;
 
     setLoading(true);
     try {
-      // Simulate API call with 1s network latency
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await loginAction({ identifier, password });
       
       // On success
       if (onLoginSuccess) {
@@ -63,7 +65,7 @@ const LoginScreen = ({ navigation, onLoginSuccess, onGoToRegister, onForgotPassw
         navigation.replace('Home');
       }
     } catch (err) {
-      setGeneralError('Invalid credentials. Please check your details and try again.');
+      setGeneralError(err.message || 'Invalid credentials. Please check your details and try again.');
     } finally {
       setLoading(false);
     }

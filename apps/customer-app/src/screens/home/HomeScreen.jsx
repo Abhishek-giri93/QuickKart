@@ -9,6 +9,8 @@ import { Colors } from '../../constants/colors';
 import { Spacing, BorderRadius, Shadow } from '../../constants/spacing';
 import { FontSize, FontWeight } from '../../constants/typography';
 import { mockStores, mockCategories } from '../../mock-data/stores';
+import { apiClient } from '../../services/apiClient';
+import { ENDPOINTS } from '../../constants/api';
 
 // --- Sub-components ---
 
@@ -84,7 +86,29 @@ const HomeScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
-    // TODO: Replace with storeService.getNearbyStores()
+    try {
+      const res = await apiClient.get(ENDPOINTS.STORES.DISCOVER);
+      const storeList = res?.data?.stores || res?.data || [];
+      if (storeList.length > 0) {
+        const formatted = storeList.map((s) => ({
+          id: s.id,
+          name: s.name,
+          category: s.category?.name || 'General',
+          rating: s.avgRating || 4.5,
+          deliveryTime: 20,
+          distance: 1.2,
+          deliveryFee: 0,
+          isOpen: s.isOpen ?? true,
+          tags: [s.category?.name || 'Grocery', 'Fast Delivery'],
+        }));
+        setStores(formatted);
+        setCategories([{ id: null, name: 'All', icon: '🌟' }, ...mockCategories]);
+        setLoading(false);
+        return;
+      }
+    } catch {
+      // Fall through to mock data
+    }
     await new Promise((r) => setTimeout(r, 600));
     setStores(mockStores);
     setCategories([{ id: null, name: 'All', icon: '🌟' }, ...mockCategories]);

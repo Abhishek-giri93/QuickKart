@@ -16,6 +16,7 @@ import {
   validatePassword,
   validateConfirmPassword,
 } from '../../utils/validators';
+import { useAuthStore } from '../../store/authStore';
 
 const RegisterScreen = ({ navigation, onRegisterSuccess, onGoToLogin }) => {
   const [fullName, setFullName] = useState('');
@@ -55,14 +56,19 @@ const RegisterScreen = ({ navigation, onRegisterSuccess, onGoToLogin }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const registerAction = useAuthStore((state) => state.registerAction);
+
   const handleRegister = async () => {
     setGeneralError('');
     if (!validateForm()) return;
 
     setLoading(true);
     try {
-      // Simulate API call with 1s network latency
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const nameParts = fullName.trim().split(/\s+/);
+      const firstName = nameParts[0] || 'User';
+      const lastName = nameParts.slice(1).join(' ') || 'Customer';
+
+      await registerAction({ firstName, lastName, email, phone, password });
 
       if (onRegisterSuccess) {
         onRegisterSuccess();
@@ -70,7 +76,7 @@ const RegisterScreen = ({ navigation, onRegisterSuccess, onGoToLogin }) => {
         navigation.replace('Home');
       }
     } catch (err) {
-      setGeneralError('Registration failed. Please check your network and try again.');
+      setGeneralError(err.message || 'Registration failed. Please check your network and try again.');
     } finally {
       setLoading(false);
     }
