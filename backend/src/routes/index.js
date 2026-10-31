@@ -44,6 +44,8 @@ import orderRouter from '../modules/orders/order.routes.js';
 import deliveryRouter from '../modules/deliveries/delivery.routes.js';
 import paymentRouter from '../modules/payments/payment.routes.js';
 import notificationRouter from '../modules/notifications/notification.routes.js';
+import reviewRouter from '../modules/reviews/review.routes.js';
+import supportRouter from '../modules/support/support.routes.js';
 
 router.use('/auth', authRouter);
 router.use('/customers', customerRouter);
@@ -58,6 +60,8 @@ router.use('/orders', orderRouter);
 router.use('/deliveries', deliveryRouter);
 router.use('/payments', paymentRouter);
 router.use('/notifications', notificationRouter);
+router.use('/reviews', reviewRouter);
+router.use('/support', supportRouter);
 
 // import reviewsRouter     from '../modules/reviews/reviews.routes.js';
 // import couponsRouter     from '../modules/coupons/coupons.routes.js';
