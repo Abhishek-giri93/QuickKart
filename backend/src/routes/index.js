@@ -46,6 +46,7 @@ import paymentRouter from '../modules/payments/payment.routes.js';
 import notificationRouter from '../modules/notifications/notification.routes.js';
 import reviewRouter from '../modules/reviews/review.routes.js';
 import supportRouter from '../modules/support/support.routes.js';
+import adminRouter from '../modules/admin/admin.routes.js';
 
 router.use('/auth', authRouter);
 router.use('/customers', customerRouter);
@@ -62,6 +63,7 @@ router.use('/payments', paymentRouter);
 router.use('/notifications', notificationRouter);
 router.use('/reviews', reviewRouter);
 router.use('/support', supportRouter);
+router.use('/admin', adminRouter);
 
 // import reviewsRouter     from '../modules/reviews/reviews.routes.js';
 // import couponsRouter     from '../modules/coupons/coupons.routes.js';
