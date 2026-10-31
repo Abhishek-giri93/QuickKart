@@ -1,0 +1,473 @@
+{
+  "info": {
+    "name": "QuickKart Hyperlocal Delivery API",
+    "description": "Complete Postman API Collection for QuickKart Backend Platform (Phases 1-14)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "01. Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@test.com\",\n  \"password\": \"SecurePass123!\",\n  \"phone\": \"9876543210\",\n  \"role\": \"CUSTOMER\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register" }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@test.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login" }
+          }
+        },
+        {
+          "name": "Refresh Access Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"<your_refresh_token>\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/refresh" }
+          }
+        },
+        {
+          "name": "Get Current User (Me)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/auth/me" }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/auth/logout" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02. Users & Profiles",
+      "item": [
+        {
+          "name": "Get Customer Profile",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/customers/profile" } }
+        },
+        {
+          "name": "Update Customer Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Aarav\",\n  \"lastName\": \"Sharma\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers/profile" }
+          }
+        },
+        {
+          "name": "Get Customer Addresses",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/customers/addresses" } }
+        },
+        {
+          "name": "Add Customer Address",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Home\",\n  \"recipientName\": \"Aarav Sharma\",\n  \"recipientPhone\": \"9876543210\",\n  \"addressLine1\": \"Flat 204, Royal Palms\",\n  \"city\": \"Mumbai\",\n  \"state\": \"Maharashtra\",\n  \"pincode\": \"400001\",\n  \"latitude\": 19.0760,\n  \"longitude\": 72.8777,\n  \"isDefault\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers/addresses" }
+          }
+        },
+        {
+          "name": "Get Seller Profile",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/sellers/profile" } }
+        },
+        {
+          "name": "Get Delivery Partner Profile",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/delivery-partners/profile" } }
+        },
+        {
+          "name": "Update Delivery Partner GPS",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 19.0765,\n  \"longitude\": 72.8780,\n  \"isOnline\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/delivery-partners/location" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03. Categories & Stores",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/categories" } }
+        },
+        {
+          "name": "Create Category (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dairy & Breakfast\",\n  \"description\": \"Fresh Milk, Bread, Eggs and Butter\",\n  \"icon\": \"milk-icon.png\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/categories" }
+          }
+        },
+        {
+          "name": "Discover Nearby Stores",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/stores/nearby?lat=19.0760&lng=72.8777&radius=10"
+            }
+          }
+        },
+        {
+          "name": "Register Store (Seller)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sharma Superstore\",\n  \"phone\": \"9876543211\",\n  \"addressLine\": \"Shop 12, Market Square\",\n  \"city\": \"Mumbai\",\n  \"latitude\": 19.0762,\n  \"longitude\": 72.8775,\n  \"openingTime\": \"08:00\",\n  \"closingTime\": \"22:00\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/stores" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04. Products & Inventory",
+      "item": [
+        {
+          "name": "List Store Products",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/products/store/:storeId" } }
+        },
+        {
+          "name": "Create Product (Seller)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"storeId\": \"<store_uuid>\",\n  \"categoryId\": \"<category_uuid>\",\n  \"name\": \"Amul Taaza Milk 500ml\",\n  \"price\": 30,\n  \"discountedPrice\": 28,\n  \"unit\": \"packet\",\n  \"initialStock\": 50\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/products" }
+          }
+        },
+        {
+          "name": "Update Inventory Stock (Seller)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 100,\n  \"lowStockAlert\": 10\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/inventory/:productId" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05. Cart",
+      "item": [
+        {
+          "name": "Get Cart",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/cart" } }
+        },
+        {
+          "name": "Add Item to Cart",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"<product_uuid>\",\n  \"quantity\": 2\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/cart/items" }
+          }
+        },
+        {
+          "name": "Apply Coupon",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WELCOME50\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/cart/apply-coupon" }
+          }
+        },
+        {
+          "name": "Clear Cart",
+          "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/cart" } }
+        }
+      ]
+    },
+    {
+      "name": "06. Orders",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"addressId\": \"<address_uuid>\",\n  \"paymentMethod\": \"COD\",\n  \"specialInstructions\": \"Leave at front door\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders" }
+          }
+        },
+        {
+          "name": "Get My Orders History",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/orders" } }
+        },
+        {
+          "name": "Seller Store Orders",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/orders/seller/store-orders" } }
+        },
+        {
+          "name": "Seller Accept Order",
+          "request": { "method": "PATCH", "url": { "raw": "{{baseUrl}}/orders/:id/accept" } }
+        },
+        {
+          "name": "Seller Mark Preparing",
+          "request": { "method": "PATCH", "url": { "raw": "{{baseUrl}}/orders/:id/prepare" } }
+        },
+        {
+          "name": "Seller Mark Ready",
+          "request": { "method": "PATCH", "url": { "raw": "{{baseUrl}}/orders/:id/ready" } }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cancellationReason\": \"Ordered by mistake\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders/:id/cancel" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "07. Deliveries",
+      "item": [
+        {
+          "name": "Get My Assigned Deliveries",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/deliveries" } }
+        },
+        {
+          "name": "Delivery Partner Confirm Pickup",
+          "request": { "method": "PATCH", "url": { "raw": "{{baseUrl}}/deliveries/:id/pickup" } }
+        },
+        {
+          "name": "Verify OTP & Complete Delivery",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"otp\": \"1234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/deliveries/:id/deliver" }
+          }
+        },
+        {
+          "name": "Admin View Pending Deliveries",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/deliveries/pending" } }
+        }
+      ]
+    },
+    {
+      "name": "08. Payments",
+      "item": [
+        {
+          "name": "Create Razorpay Order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"<order_uuid>\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/payments/orders" }
+          }
+        },
+        {
+          "name": "Verify Razorpay Payment Signature",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"razorpayOrderId\": \"order_Lsm...\",\n  \"razorpayPaymentId\": \"pay_Lsm...\",\n  \"razorpaySignature\": \"abcdef...\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/payments/verify" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "09. Notifications",
+      "item": [
+        {
+          "name": "List User Notifications",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/notifications" } }
+        },
+        {
+          "name": "Get Unread Count",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/notifications/unread-count" } }
+        },
+        {
+          "name": "Mark All As Read",
+          "request": { "method": "PATCH", "url": { "raw": "{{baseUrl}}/notifications/mark-all-read" } }
+        }
+      ]
+    },
+    {
+      "name": "10. Reviews & Support",
+      "item": [
+        {
+          "name": "Create Dual Order Review",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"<order_uuid>\",\n  \"storeRating\": 5,\n  \"storeComment\": \"Fresh and neat!\",\n  \"deliveryRating\": 5,\n  \"deliveryComment\": \"Polite delivery partner\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/reviews" }
+          }
+        },
+        {
+          "name": "Create Support Ticket",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"<order_uuid>\",\n  \"subject\": \"Damaged item\",\n  \"description\": \"One packet of milk was leaking.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/support/tickets" }
+          }
+        },
+        {
+          "name": "Admin Resolve Support Ticket",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"RESOLVED\",\n  \"resolution\": \"Wallet refund credited\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/support/tickets/:id/status" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. Admin Platform Controls",
+      "item": [
+        {
+          "name": "Platform Analytics Overview",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/analytics/overview" } }
+        },
+        {
+          "name": "List Stores",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/stores" } }
+        },
+        {
+          "name": "Update Store Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/admin/stores/:id/status" }
+          }
+        },
+        {
+          "name": "List Delivery Partners",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/delivery-partners" } }
+        },
+        {
+          "name": "Verify Delivery Partner",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isVerified\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/admin/delivery-partners/:id/verify" }
+          }
+        },
+        {
+          "name": "Create Promotional Coupon",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"FESTIVE25\",\n  \"description\": \"25% off festive discount\",\n  \"discountPercent\": 25,\n  \"minOrderAmount\": 300,\n  \"maxDiscount\": 150,\n  \"usageLimit\": 1000,\n  \"validFrom\": \"2026-10-01T00:00:00Z\",\n  \"validUntil\": \"2026-11-30T23:59:59Z\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/admin/coupons" }
+          }
+        }
+      ]
+    }
+  ]
+}
