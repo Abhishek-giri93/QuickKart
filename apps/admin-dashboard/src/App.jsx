@@ -42,14 +42,16 @@ export default function App() {
     );
   };
 
+  const pendingSellersCount = sellers.filter((s) => s.status.includes('Pending')).length;
+
   return (
     <div className="admin-layout">
       {/* Left Sidebar */}
       <aside className="admin-sidebar">
         <div className="brand-header">
-          <span className="brand-logo">🛒</span>
+          <div className="brand-logo">🛒</div>
           <div>
-            <div className="brand-title">QuickKart</div>
+            <div className="brand-title">Quick<span>Kart</span></div>
             <span className="brand-badge">Central Admin</span>
           </div>
         </div>
@@ -60,7 +62,9 @@ export default function App() {
               className={`nav-item-btn ${activeTab === 'analytics' ? 'active' : ''}`}
               onClick={() => setActiveTab('analytics')}
             >
-              <span>📊</span> Analytics & Overview
+              <div className="nav-item-content">
+                <span>📊</span> Analytics & Overview
+              </div>
             </button>
           </li>
           <li>
@@ -68,7 +72,10 @@ export default function App() {
               className={`nav-item-btn ${activeTab === 'orders' ? 'active' : ''}`}
               onClick={() => setActiveTab('orders')}
             >
-              <span>📦</span> Live Orders Monitor
+              <div className="nav-item-content">
+                <span>📦</span> Live Orders Monitor
+              </div>
+              <span className="nav-badge">{orders.length}</span>
             </button>
           </li>
           <li>
@@ -76,7 +83,12 @@ export default function App() {
               className={`nav-item-btn ${activeTab === 'sellers' ? 'active' : ''}`}
               onClick={() => setActiveTab('sellers')}
             >
-              <span>🏪</span> Seller Approvals ({sellers.filter((s) => s.status.includes('Pending')).length})
+              <div className="nav-item-content">
+                <span>🏪</span> Seller Approvals
+              </div>
+              {pendingSellersCount > 0 && (
+                <span className="nav-badge" style={{ background: '#EA580C' }}>{pendingSellersCount}</span>
+              )}
             </button>
           </li>
           <li>
@@ -84,7 +96,9 @@ export default function App() {
               className={`nav-item-btn ${activeTab === 'riders' ? 'active' : ''}`}
               onClick={() => setActiveTab('riders')}
             >
-              <span>🛵</span> Delivery Partner Fleet
+              <div className="nav-item-content">
+                <span>🛵</span> Delivery Partner Fleet
+              </div>
             </button>
           </li>
           <li>
@@ -92,7 +106,9 @@ export default function App() {
               className={`nav-item-btn ${activeTab === 'coupons' ? 'active' : ''}`}
               onClick={() => setActiveTab('coupons')}
             >
-              <span>🏷️</span> Coupons & Offers
+              <div className="nav-item-content">
+                <span>🏷️</span> Coupons & Offers
+              </div>
             </button>
           </li>
           <li>
@@ -100,14 +116,18 @@ export default function App() {
               className={`nav-item-btn ${activeTab === 'settings' ? 'active' : ''}`}
               onClick={() => setActiveTab('settings')}
             >
-              <span>⚙️</span> Platform Settings
+              <div className="nav-item-content">
+                <span>⚙️</span> Platform Settings
+              </div>
             </button>
           </li>
         </ul>
 
         <div className="sidebar-footer">
-          <span>QuickKart Portal v1.0</span>
-          <span>Bhopal Hub</span>
+          <div>QuickKart Portal v1.0</div>
+          <div className="hub-status">
+            <span>●</span> Central Hub
+          </div>
         </div>
       </aside>
 
@@ -116,23 +136,30 @@ export default function App() {
         {/* Top Header Bar */}
         <header className="admin-topbar">
           <div className="topbar-left">
-            <input
-              type="text"
-              className="topbar-search"
-              placeholder="Search Orders, Stores, Riders..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+            <div className="topbar-search-wrapper">
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                className="topbar-search"
+                placeholder="Search Orders, Stores, Riders (Ctrl+K)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
 
           <div className="topbar-right">
             <div className="system-status">
-              <span>●</span> All Systems Operational
+              <span className="status-dot"></span>
+              All Systems Operational
             </div>
 
             <div className="admin-profile-pill">
               <div className="admin-avatar">👑</div>
-              <span>Admin Superuser</span>
+              <div>
+                <div className="admin-name">Admin Superuser</div>
+                <div className="admin-role">Super Admin</div>
+              </div>
             </div>
           </div>
         </header>
@@ -142,43 +169,48 @@ export default function App() {
           {/* TAB 1: ANALYTICS */}
           {activeTab === 'analytics' && (
             <div>
+              <div className="page-header-row">
+                <div>
+                  <h1 className="page-title">Platform Analytics & Overview</h1>
+                  <p className="page-subtitle">Real-time health metrics, order volumes, and financial performance</p>
+                </div>
+              </div>
+
               <div className="kpi-grid">
                 <div className="kpi-card">
                   <div className="kpi-top">
-                    <span className="kpi-title">Gross Merchandise Value (GMV)</span>
-                    <span className="kpi-icon">💰</span>
+                    <span className="kpi-title">Gross Merchandise Value</span>
+                    <div className="kpi-icon-bubble green">💰</div>
                   </div>
                   <div className="kpi-value">₹2,48,920</div>
-                  <div className="kpi-sub">+18.4% this week</div>
+                  <span className="kpi-trend positive">↑ +18.4% this week</span>
                 </div>
 
                 <div className="kpi-card">
                   <div className="kpi-top">
                     <span className="kpi-title">Total Orders Today</span>
-                    <span className="kpi-icon">📦</span>
+                    <div className="kpi-icon-bubble blue">📦</div>
                   </div>
                   <div className="kpi-value">1,428</div>
-                  <div className="kpi-sub">98.2% on-time delivery</div>
+                  <span className="kpi-trend positive">✓ 98.2% on-time</span>
                 </div>
 
                 <div className="kpi-card">
                   <div className="kpi-top">
                     <span className="kpi-title">Active Local Stores</span>
-                    <span className="kpi-icon">🏪</span>
+                    <div className="kpi-icon-bubble orange">🏪</div>
                   </div>
                   <div className="kpi-value">142</div>
-                  <div className="kpi-sub" style={{ color: '#D97706' }}>
-                    {sellers.filter((s) => s.status.includes('Pending')).length} pending approvals
-                  </div>
+                  <span className="kpi-trend warning">{pendingSellersCount} approvals pending</span>
                 </div>
 
                 <div className="kpi-card">
                   <div className="kpi-top">
                     <span className="kpi-title">Riders on Duty</span>
-                    <span className="kpi-icon">🛵</span>
+                    <div className="kpi-icon-bubble purple">🛵</div>
                   </div>
                   <div className="kpi-value">68</div>
-                  <div className="kpi-sub">Avg delivery: 18.2 mins</div>
+                  <span className="kpi-trend neutral">Avg ETA: 18.2 min</span>
                 </div>
               </div>
 
@@ -187,7 +219,7 @@ export default function App() {
                 <div className="card-header-row">
                   <h3 className="card-title">Recent Live Orders</h3>
                   <button className="btn-sm btn-primary" onClick={() => setActiveTab('orders')}>
-                    View All Orders →
+                    View Live Dispatch Fleet →
                   </button>
                 </div>
                 <div className="table-responsive">
@@ -205,10 +237,10 @@ export default function App() {
                     <tbody>
                       {orders.map((o) => (
                         <tr key={o.id}>
-                          <td style={{ fontWeight: 700 }}>{o.id}</td>
-                          <td>{o.customer}</td>
+                          <td style={{ fontWeight: 800, color: '#3B82F6' }}>{o.id}</td>
+                          <td style={{ fontWeight: 600 }}>{o.customer}</td>
                           <td>{o.store}</td>
-                          <td style={{ fontWeight: 700 }}>{o.amount}</td>
+                          <td style={{ fontWeight: 800 }}>{o.amount}</td>
                           <td>{o.rider}</td>
                           <td>
                             <span className={`badge ${o.status === 'Delivered' ? 'badge-success' : o.status === 'On The Way' ? 'badge-warning' : 'badge-info'}`}>
@@ -226,166 +258,191 @@ export default function App() {
 
           {/* TAB 2: LIVE ORDERS MONITOR */}
           {activeTab === 'orders' && (
-            <div className="data-card">
-              <div className="card-header-row">
-                <h3 className="card-title">Live Orders Fleet Dispatch</h3>
-                <span className="badge badge-success">Auto-Refresh: Every 10s</span>
+            <div>
+              <div className="page-header-row">
+                <div>
+                  <h1 className="page-title">Live Orders Fleet Dispatch</h1>
+                  <p className="page-subtitle">Real-time status updates and order transitions across all hub stores</p>
+                </div>
+                <span className="badge badge-success">● Auto-Refresh: 10s</span>
               </div>
-              <div className="table-responsive">
-                <table className="custom-table">
-                  <thead>
-                    <tr>
-                      <th>Order ID</th>
-                      <th>Time</th>
-                      <th>Customer Name</th>
-                      <th>Store Name</th>
-                      <th>Order Contents</th>
-                      <th>Amount</th>
-                      <th>Assigned Rider</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orders.map((o) => (
-                      <tr key={o.id}>
-                        <td style={{ fontWeight: 800 }}>{o.id}</td>
-                        <td style={{ color: '#64748B' }}>{o.time}</td>
-                        <td>{o.customer}</td>
-                        <td>{o.store}</td>
-                        <td style={{ fontSize: 12 }}>{o.items}</td>
-                        <td style={{ fontWeight: 800 }}>{o.amount}</td>
-                        <td>{o.rider}</td>
-                        <td>
-                          <span className={`badge ${o.status === 'Delivered' ? 'badge-success' : o.status === 'On The Way' ? 'badge-warning' : 'badge-info'}`}>
-                            {o.status}
-                          </span>
-                        </td>
-                        <td>
-                          <button className="btn-sm" onClick={() => alert(`Order details for ${o.id}`)}>
-                            Inspect
-                          </button>
-                        </td>
+
+              <div className="data-card">
+                <div className="table-responsive">
+                  <table className="custom-table">
+                    <thead>
+                      <tr>
+                        <th>Order ID</th>
+                        <th>Time</th>
+                        <th>Customer Name</th>
+                        <th>Store Name</th>
+                        <th>Order Contents</th>
+                        <th>Amount</th>
+                        <th>Assigned Rider</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {orders.map((o) => (
+                        <tr key={o.id}>
+                          <td style={{ fontWeight: 800, color: '#3B82F6' }}>{o.id}</td>
+                          <td style={{ color: '#64748B', fontSize: 12 }}>{o.time}</td>
+                          <td style={{ fontWeight: 600 }}>{o.customer}</td>
+                          <td>{o.store}</td>
+                          <td style={{ fontSize: 12, color: '#475569' }}>{o.items}</td>
+                          <td style={{ fontWeight: 800 }}>{o.amount}</td>
+                          <td>{o.rider}</td>
+                          <td>
+                            <span className={`badge ${o.status === 'Delivered' ? 'badge-success' : o.status === 'On The Way' ? 'badge-warning' : 'badge-info'}`}>
+                              {o.status}
+                            </span>
+                          </td>
+                          <td>
+                            <button className="btn-sm" onClick={() => alert(`Inspecting order ${o.id}`)}>
+                              Inspect
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
 
           {/* TAB 3: SELLER APPROVALS */}
           {activeTab === 'sellers' && (
-            <div className="data-card">
-              <div className="card-header-row">
-                <h3 className="card-title">Merchant & Store Verification Requests</h3>
-                <span style={{ fontSize: 13, color: '#64748B' }}>Verify FSSAI, GST & Store Location</span>
+            <div>
+              <div className="page-header-row">
+                <div>
+                  <h1 className="page-title">Merchant & Store Verification</h1>
+                  <p className="page-subtitle">Verify FSSAI licenses, business registrations, and store locations</p>
+                </div>
+                {pendingSellersCount > 0 && (
+                  <span className="badge badge-warning">{pendingSellersCount} Requests Pending</span>
+                )}
               </div>
-              <div className="table-responsive">
-                <table className="custom-table">
-                  <thead>
-                    <tr>
-                      <th>Merchant ID</th>
-                      <th>Store Name</th>
-                      <th>Category</th>
-                      <th>Owner Name</th>
-                      <th>Contact</th>
-                      <th>FSSAI License</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sellers.map((s) => (
-                      <tr key={s.id}>
-                        <td style={{ fontWeight: 700 }}>{s.id}</td>
-                        <td style={{ fontWeight: 700 }}>{s.name}</td>
-                        <td>{s.category}</td>
-                        <td>{s.owner}</td>
-                        <td>{s.phone}</td>
-                        <td style={{ fontFamily: 'monospace' }}>{s.fssai}</td>
-                        <td>
-                          <span className={`badge ${s.status === 'Approved' ? 'badge-success' : 'badge-warning'}`}>
-                            {s.status}
-                          </span>
-                        </td>
-                        <td>
-                          {s.status.includes('Pending') ? (
-                            <div style={{ display: 'flex', gap: 6 }}>
-                              <button
-                                className="btn-sm btn-success"
-                                onClick={() => handleVerifySeller(s.id, 'Approved')}
-                              >
-                                Approve ✅
-                              </button>
-                              <button
-                                className="btn-sm btn-danger"
-                                onClick={() => handleVerifySeller(s.id, 'Rejected')}
-                              >
-                                Reject ❌
-                              </button>
-                            </div>
-                          ) : (
-                            <span style={{ color: '#16A34A', fontWeight: 600, fontSize: 12 }}>
-                              Active Merchant
-                            </span>
-                          )}
-                        </td>
+
+              <div className="data-card">
+                <div className="table-responsive">
+                  <table className="custom-table">
+                    <thead>
+                      <tr>
+                        <th>Merchant ID</th>
+                        <th>Store Name</th>
+                        <th>Category</th>
+                        <th>Owner Name</th>
+                        <th>Contact</th>
+                        <th>FSSAI License</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {sellers.map((s) => (
+                        <tr key={s.id}>
+                          <td style={{ fontWeight: 800 }}>{s.id}</td>
+                          <td style={{ fontWeight: 700 }}>{s.name}</td>
+                          <td><span className="badge badge-info">{s.category}</span></td>
+                          <td>{s.owner}</td>
+                          <td>{s.phone}</td>
+                          <td style={{ fontFamily: 'monospace', fontSize: 12 }}>{s.fssai}</td>
+                          <td>
+                            <span className={`badge ${s.status === 'Approved' ? 'badge-success' : 'badge-warning'}`}>
+                              {s.status}
+                            </span>
+                          </td>
+                          <td>
+                            {s.status.includes('Pending') ? (
+                              <div style={{ display: 'flex', gap: 8 }}>
+                                <button
+                                  className="btn-sm btn-success"
+                                  onClick={() => handleVerifySeller(s.id, 'Approved')}
+                                >
+                                  ✓ Approve
+                                </button>
+                                <button
+                                  className="btn-sm btn-danger"
+                                  onClick={() => handleVerifySeller(s.id, 'Rejected')}
+                                >
+                                  ✕ Reject
+                                </button>
+                              </div>
+                            ) : (
+                              <span style={{ color: '#16A34A', fontWeight: 700, fontSize: 12 }}>
+                                ✓ Verified Merchant
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
 
           {/* TAB 4: DELIVERY FLEET */}
           {activeTab === 'riders' && (
-            <div className="data-card">
-              <div className="card-header-row">
-                <h3 className="card-title">Delivery Partner Fleet Roster</h3>
-                <span className="badge badge-info">{riders.filter((r) => !r.activeShift.includes('Offline')).length} Active on Shift</span>
+            <div>
+              <div className="page-header-row">
+                <div>
+                  <h1 className="page-title">Delivery Partner Fleet</h1>
+                  <p className="page-subtitle">Real-time driver roster, active duty shifts, and vehicle tracking</p>
+                </div>
+                <span className="badge badge-info">
+                  {riders.filter((r) => !r.activeShift.includes('Offline')).length} Active on Shift
+                </span>
               </div>
-              <div className="table-responsive">
-                <table className="custom-table">
-                  <thead>
-                    <tr>
-                      <th>Rider ID</th>
-                      <th>Rider Name</th>
-                      <th>Vehicle & Registration</th>
-                      <th>Operating Zone</th>
-                      <th>Current Shift</th>
-                      <th>Today Completed</th>
-                      <th>Rating</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {riders.map((r) => (
-                      <tr key={r.id}>
-                        <td style={{ fontWeight: 700 }}>{r.id}</td>
-                        <td style={{ fontWeight: 700 }}>{r.name}</td>
-                        <td>{r.vehicle}</td>
-                        <td>{r.zone}</td>
-                        <td>
-                          <span className={`badge ${r.activeShift.includes('Online') ? 'badge-success' : r.activeShift.includes('On Delivery') ? 'badge-warning' : 'badge-danger'}`}>
-                            {r.activeShift}
-                          </span>
-                        </td>
-                        <td style={{ fontWeight: 700 }}>{r.completed} trips</td>
-                        <td>{r.rating}</td>
+
+              <div className="data-card">
+                <div className="table-responsive">
+                  <table className="custom-table">
+                    <thead>
+                      <tr>
+                        <th>Rider ID</th>
+                        <th>Rider Name</th>
+                        <th>Vehicle & Reg</th>
+                        <th>Operating Zone</th>
+                        <th>Current Shift</th>
+                        <th>Trips Today</th>
+                        <th>Rating</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {riders.map((r) => (
+                        <tr key={r.id}>
+                          <td style={{ fontWeight: 800 }}>{r.id}</td>
+                          <td style={{ fontWeight: 700 }}>{r.name}</td>
+                          <td>{r.vehicle}</td>
+                          <td>{r.zone}</td>
+                          <td>
+                            <span className={`badge ${r.activeShift.includes('Online') ? 'badge-success' : r.activeShift.includes('On Delivery') ? 'badge-warning' : 'badge-danger'}`}>
+                              {r.activeShift}
+                            </span>
+                          </td>
+                          <td style={{ fontWeight: 800 }}>{r.completed} trips</td>
+                          <td>{r.rating}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
 
           {/* TAB 5: COUPONS */}
           {activeTab === 'coupons' && (
-            <div className="data-card">
-              <div className="card-header-row">
-                <h3 className="card-title">Promotions & Coupon Codes</h3>
+            <div>
+              <div className="page-header-row">
+                <div>
+                  <h1 className="page-title">Promotions & Coupon Codes</h1>
+                  <p className="page-subtitle">Manage customer acquisition campaigns and order discount rules</p>
+                </div>
                 <button
                   className="btn-sm btn-primary"
                   onClick={() => alert('New coupon creation modal')}
@@ -393,80 +450,78 @@ export default function App() {
                   + Create Coupon Code
                 </button>
               </div>
-              <div className="table-responsive">
-                <table className="custom-table">
-                  <thead>
-                    <tr>
-                      <th>Coupon Code</th>
-                      <th>Discount Value</th>
-                      <th>Min Order Value</th>
-                      <th>Total Times Redeemed</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {coupons.map((c) => (
-                      <tr key={c.code}>
-                        <td style={{ fontWeight: 800, color: '#3B82F6', letterSpacing: 1 }}>{c.code}</td>
-                        <td style={{ fontWeight: 700 }}>{c.discount}</td>
-                        <td>{c.minOrder}</td>
-                        <td>{c.usedCount} customers</td>
-                        <td>
-                          <span className="badge badge-success">{c.status}</span>
-                        </td>
+
+              <div className="data-card">
+                <div className="table-responsive">
+                  <table className="custom-table">
+                    <thead>
+                      <tr>
+                        <th>Coupon Code</th>
+                        <th>Discount Value</th>
+                        <th>Min Order Value</th>
+                        <th>Times Redeemed</th>
+                        <th>Status</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {coupons.map((c) => (
+                        <tr key={c.code}>
+                          <td style={{ fontWeight: 800, color: '#FF6B35', letterSpacing: 0.8 }}>{c.code}</td>
+                          <td style={{ fontWeight: 700 }}>{c.discount}</td>
+                          <td>{c.minOrder}</td>
+                          <td style={{ fontWeight: 700 }}>{c.usedCount} customers</td>
+                          <td>
+                            <span className="badge badge-success">{c.status}</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
 
           {/* TAB 6: SETTINGS */}
           {activeTab === 'settings' && (
-            <div className="data-card" style={{ maxWidth: 650 }}>
-              <h3 className="card-title" style={{ marginBottom: 16 }}>Platform Configuration</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div>
+              <div className="page-header-row">
                 <div>
-                  <label style={{ fontSize: 13, fontWeight: 700, display: 'block', marginBottom: 4 }}>
-                    Platform Commission Rate (%)
-                  </label>
-                  <input
-                    type="number"
-                    defaultValue="5"
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #CBD5E1', borderRadius: 6 }}
-                  />
+                  <h1 className="page-title">Platform Configuration</h1>
+                  <p className="page-subtitle">Global delivery fees, marketplace commissions, and business rules</p>
                 </div>
+              </div>
 
-                <div>
-                  <label style={{ fontSize: 13, fontWeight: 700, display: 'block', marginBottom: 4 }}>
-                    Standard Base Delivery Radius (km)
-                  </label>
-                  <input
-                    type="number"
-                    defaultValue="5"
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #CBD5E1', borderRadius: 6 }}
-                  />
+              <div className="data-card" style={{ maxWidth: 640 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  <div className="form-group">
+                    <label className="form-label">Platform Commission Rate (%)</label>
+                    <input type="number" defaultValue="10" className="form-input" />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Standard Base Delivery Radius (km)</label>
+                    <input type="number" defaultValue="5" className="form-input" />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Free Delivery Threshold (₹)</label>
+                    <input type="number" defaultValue="499" className="form-input" />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Delivery Surge Multiplier</label>
+                    <input type="number" step="0.1" defaultValue="1.0" className="form-input" />
+                  </div>
+
+                  <button
+                    className="btn-sm btn-primary"
+                    style={{ alignSelf: 'flex-start', padding: '12px 24px', marginTop: 8 }}
+                    onClick={() => alert('Platform rules saved successfully!')}
+                  >
+                    Save Platform Rules
+                  </button>
                 </div>
-
-                <div>
-                  <label style={{ fontSize: 13, fontWeight: 700, display: 'block', marginBottom: 4 }}>
-                    Free Delivery Threshold (₹)
-                  </label>
-                  <input
-                    type="number"
-                    defaultValue="199"
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #CBD5E1', borderRadius: 6 }}
-                  />
-                </div>
-
-                <button
-                  className="btn-sm btn-primary"
-                  style={{ alignSelf: 'flex-start', padding: '10px 20px', marginTop: 10 }}
-                  onClick={() => alert('Platform settings saved successfully!')}
-                >
-                  Save Platform Rules
-                </button>
               </div>
             </div>
           )}
