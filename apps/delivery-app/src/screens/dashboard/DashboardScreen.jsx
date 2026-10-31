@@ -11,6 +11,7 @@ import { FontSize, FontWeight } from '../../constants/typography';
 
 const DashboardScreen = ({ onAcceptOrder, onNavigateToEarnings }) => {
   const [isOnline, setIsOnline] = useState(true);
+  const [hasRequest, setHasRequest] = useState(true);
 
   const stats = [
     { label: "Today's Payout", value: '₹850', icon: '💰', sub: '9 deliveries' },
@@ -246,6 +247,47 @@ const styles = StyleSheet.create({
   },
   acceptBtnText: { color: '#FFFFFF', fontWeight: '800', fontSize: FontSize.sm },
 
+  searchingCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.md,
+    padding: Spacing.lg,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderStyle: 'dashed',
+  },
+  searchingTitle: {
+    fontSize: FontSize.base,
+    fontWeight: FontWeight.bold,
+    color: Colors.text.primary,
+  },
+  searchingSub: {
+    fontSize: FontSize.xs,
+    color: Colors.text.secondary,
+    textAlign: 'center',
+    marginTop: 4,
+    marginBottom: Spacing.md,
+    lineHeight: 18,
+  },
+  simulateBtn: {
+    backgroundColor: '#1E293B',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  simulateBtnText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: FontSize.sm,
+  },
+  offlineCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.md,
+    padding: Spacing.lg,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
   sectionTitle: { fontSize: FontSize.base, fontWeight: '800', color: Colors.text.primary },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   statCard: {
