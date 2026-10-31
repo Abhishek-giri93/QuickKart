@@ -1,55 +1,69 @@
-// Customer App — Login Screen
-
+// Customer App — Login Screen (with Validation & Premium UX)
 import React, { useState } from 'react';
 import {
-  View, Text, TextInput, StyleSheet, TouchableOpacity,
+  View, Text, StyleSheet, TouchableOpacity,
   KeyboardAvoidingView, Platform, ScrollView, StatusBar,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
-import { Spacing, BorderRadius } from '../../constants/spacing';
+import { Spacing } from '../../constants/spacing';
 import { FontSize, FontWeight } from '../../constants/typography';
+import Input from '../../components/common/Input';
+import Button from '../../components/common/Button';
+import { validatePhone, validateEmail, validatePassword } from '../../utils/validators';
 
-// Components (will be moved to components/common/)
-const Input = ({ label, value, onChangeText, placeholder, secureTextEntry, keyboardType }) => {
-  return (
-    <View style={{ marginBottom: Spacing.md }}>
-      <Text style={inputStyles.label}>{label}</Text>
-      <View style={inputStyles.inputBox}>
-        <TextInput
-          style={inputStyles.input}
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={placeholder}
-          placeholderTextColor={Colors.text.tertiary}
-          secureTextEntry={secureTextEntry}
-          keyboardType={keyboardType || 'default'}
-        />
-      </View>
-    </View>
-  );
-};
-
-const LoginScreen = ({ navigation }) => {
-  const [phone, setPhone] = useState('');
+const LoginScreen = ({ navigation, onLoginSuccess, onGoToRegister, onForgotPassword }) => {
+  const [identifier, setIdentifier] = useState(''); // email or phone
   const [password, setPassword] = useState('');
+  
+  // Field-specific validation errors
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [generalError, setGeneralError] = useState('');
+
+  // Auto-detect whether user entered phone or email
+  const isPhoneIdentifier = /^\d+$/.test(identifier.replace(/[\s-+()]/g, ''));
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Validate identifier (phone or email)
+    if (!identifier.trim()) {
+      newErrors.identifier = 'Mobile number or email is required';
+    } else if (isPhoneIdentifier) {
+      const phoneErr = validatePhone(identifier);
+      if (phoneErr) newErrors.identifier = phoneErr;
+    } else {
+      const emailErr = validateEmail(identifier);
+      if (emailErr) newErrors.identifier = emailErr;
+    }
+
+    // Validate password
+    const passwordErr = validatePassword(password);
+    if (passwordErr) {
+      newErrors.password = passwordErr;
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleLogin = async () => {
-    if (!phone || !password) {
-      setError('Please fill all fields.');
-      return;
-    }
-    setError('');
-    setLoading(true);
+    setGeneralError('');
+    if (!validateForm()) return;
 
+    setLoading(true);
     try {
-      // TODO: Replace with real authService.login() call
-      await new Promise((r) => setTimeout(r, 1000)); // mock delay
-      // On success: useAuthStore.login(user, token)
-      navigation.replace('MainNavigator'); // temporary
-    } catch (e) {
-      setError('Invalid credentials. Please try again.');
+      // Simulate API call with 1s network latency
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      
+      // On success
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      } else if (navigation?.replace) {
+        navigation.replace('Home');
+      }
+    } catch (err) {
+      setGeneralError('Invalid credentials. Please check your details and try again.');
     } finally {
       setLoading(false);
     }
@@ -60,68 +74,99 @@ const LoginScreen = ({ navigation }) => {
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.background} />
+      <StatusBar barStyle="dark-content" backgroundColor="#FAFAFA" />
       <ScrollView
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+        {/* Brand Header */}
         <View style={styles.header}>
-          <Text style={styles.logo}>🛒</Text>
-          <Text style={styles.title}>Welcome back!</Text>
-          <Text style={styles.subtitle}>Login to continue shopping</Text>
+          <View style={styles.logoBadge}>
+            <Text style={styles.logoText}>🛒</Text>
+          </View>
+          <Text style={styles.title}>Welcome back to QuickKart</Text>
+          <Text style={styles.subtitle}>Superfast food & grocery delivery in 15 minutes</Text>
         </View>
 
-        {/* Form */}
-        <View style={styles.form}>
-          {error ? <Text style={styles.errorBanner}>{error}</Text> : null}
+        {/* Global Error Banner */}
+        {generalError ? (
+          <View style={styles.errorBanner}>
+            <Text style={styles.errorBannerIcon}>⚠️</Text>
+            <Text style={styles.errorBannerText}>{generalError}</Text>
+          </View>
+        ) : null}
 
+        {/* Form Fields */}
+        <View style={styles.form}>
           <Input
-            label="Mobile Number"
-            value={phone}
-            onChangeText={setPhone}
-            placeholder="Enter your mobile number"
-            keyboardType="phone-pad"
+            label="Mobile Number or Email"
+            value={identifier}
+            onChangeText={(text) => {
+              setIdentifier(text);
+              if (errors.identifier) setErrors((prev) => ({ ...prev, identifier: null }));
+            }}
+            placeholder="e.g. 9876543210 or name@email.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            leftIcon={<Text style={{ fontSize: 16 }}>📱</Text>}
+            error={errors.identifier}
           />
 
           <Input
             label="Password"
             value={password}
-            onChangeText={setPassword}
-            placeholder="Enter your password"
+            onChangeText={(text) => {
+              setPassword(text);
+              if (errors.password) setErrors((prev) => ({ ...prev, password: null }));
+            }}
+            placeholder="Enter your secret password"
             secureTextEntry
+            leftIcon={<Text style={{ fontSize: 16 }}>🔒</Text>}
+            error={errors.password}
           />
 
-          <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
-            <Text style={styles.forgotText}>Forgot Password?</Text>
+          <TouchableOpacity
+            style={styles.forgotBtn}
+            onPress={() => onForgotPassword?.() || navigation?.navigate?.('ForgotPassword')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.forgotText}>Forgot password?</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.loginBtn, loading && { opacity: 0.7 }]}
+          <Button
+            title="Log In"
             onPress={handleLogin}
-            disabled={loading}
-          >
-            <Text style={styles.loginBtnText}>{loading ? 'Logging in...' : 'Login'}</Text>
-          </TouchableOpacity>
+            loading={loading}
+            variant="primary"
+            size="lg"
+            style={{ marginTop: Spacing.sm }}
+          />
 
           {/* Divider */}
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>OR</Text>
+            <Text style={styles.dividerText}>or continue with</Text>
             <View style={styles.dividerLine} />
           </View>
 
-          {/* OTP Login */}
-          <TouchableOpacity style={styles.otpBtn}>
-            <Text style={styles.otpBtnText}>Login with OTP</Text>
-          </TouchableOpacity>
+          {/* OTP Quick Login */}
+          <Button
+            title="Quick Login with OTP 📲"
+            variant="outline"
+            size="md"
+            onPress={() => alert('OTP login code sent to your registered mobile')}
+          />
         </View>
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-            <Text style={styles.registerLink}>Register</Text>
+          <Text style={styles.footerText}>New to QuickKart? </Text>
+          <TouchableOpacity
+            onPress={() => onGoToRegister?.() || navigation?.navigate?.('Register')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.registerLink}>Create Account</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -129,45 +174,110 @@ const LoginScreen = ({ navigation }) => {
   );
 };
 
-const inputStyles = StyleSheet.create({
-  label: { fontSize: FontSize.sm, fontWeight: FontWeight.medium, color: Colors.text.primary, marginBottom: 6 },
-  inputBox: {
-    borderWidth: 1.5, borderColor: Colors.border, borderRadius: BorderRadius.sm,
-    backgroundColor: Colors.surface, paddingHorizontal: Spacing.sm, height: 48, justifyContent: 'center',
-  },
-  input: { fontSize: FontSize.base, color: Colors.text.primary },
-});
-
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, backgroundColor: Colors.background, padding: Spacing.xl },
-  header: { alignItems: 'center', marginTop: Spacing.huge, marginBottom: Spacing.xxl },
-  logo: { fontSize: 52, marginBottom: Spacing.md },
-  title: { fontSize: FontSize.xxl, fontWeight: FontWeight.bold, color: Colors.text.primary },
-  subtitle: { fontSize: FontSize.base, color: Colors.text.secondary, marginTop: 6 },
-  form: { flex: 1 },
+  container: {
+    flexGrow: 1,
+    backgroundColor: '#FAFAFA',
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.xl,
+    paddingBottom: Spacing.xxl,
+  },
+  header: {
+    alignItems: 'center',
+    marginVertical: Spacing.xl,
+  },
+  logoBadge: {
+    width: 72,
+    height: 72,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 107, 53, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.md,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 107, 53, 0.25)',
+  },
+  logoText: {
+    fontSize: 38,
+  },
+  title: {
+    fontSize: FontSize.xl || 22,
+    fontWeight: FontWeight.bold,
+    color: Colors.text.primary,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: FontSize.sm || 13,
+    color: Colors.text.secondary,
+    textAlign: 'center',
+    marginTop: 6,
+    paddingHorizontal: 20,
+  },
+  form: {
+    flex: 1,
+  },
   errorBanner: {
-    backgroundColor: Colors.status.errorLight, color: Colors.status.error,
-    borderRadius: BorderRadius.sm, padding: Spacing.sm, marginBottom: Spacing.md,
-    fontSize: FontSize.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.status.errorLight || '#FEE2E2',
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: Spacing.md,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.2)',
   },
-  forgotText: { color: Colors.primary, fontSize: FontSize.sm, textAlign: 'right', marginBottom: Spacing.lg },
-  loginBtn: {
-    backgroundColor: Colors.primary, borderRadius: BorderRadius.sm,
-    height: 52, alignItems: 'center', justifyContent: 'center', marginTop: Spacing.xs,
+  errorBannerIcon: {
+    fontSize: 16,
   },
-  loginBtnText: { color: '#FFF', fontSize: FontSize.base, fontWeight: FontWeight.semiBold },
-  divider: { flexDirection: 'row', alignItems: 'center', marginVertical: Spacing.xl },
-  dividerLine: { flex: 1, height: 1, backgroundColor: Colors.border },
-  dividerText: { marginHorizontal: Spacing.sm, color: Colors.text.tertiary, fontSize: FontSize.sm },
-  otpBtn: {
-    borderWidth: 1.5, borderColor: Colors.primary, borderRadius: BorderRadius.sm,
-    height: 52, alignItems: 'center', justifyContent: 'center',
+  errorBannerText: {
+    flex: 1,
+    fontSize: 13,
+    color: Colors.status.error || '#DC2626',
+    fontWeight: '600',
   },
-  otpBtnText: { color: Colors.primary, fontSize: FontSize.base, fontWeight: FontWeight.semiBold },
-  footer: { flexDirection: 'row', justifyContent: 'center', paddingVertical: Spacing.xl },
-  footerText: { fontSize: FontSize.base, color: Colors.text.secondary },
-  registerLink: { fontSize: FontSize.base, color: Colors.primary, fontWeight: FontWeight.semiBold },
+  forgotBtn: {
+    alignSelf: 'flex-end',
+    marginBottom: Spacing.md,
+    paddingVertical: 4,
+  },
+  forgotText: {
+    color: Colors.primary,
+    fontSize: FontSize.sm || 13,
+    fontWeight: FontWeight.semiBold,
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: Spacing.lg,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: Colors.border,
+  },
+  dividerText: {
+    marginHorizontal: Spacing.sm,
+    color: Colors.text.tertiary,
+    fontSize: FontSize.xs || 12,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: Spacing.xl,
+  },
+  footerText: {
+    fontSize: FontSize.base || 14,
+    color: Colors.text.secondary,
+  },
+  registerLink: {
+    fontSize: FontSize.base || 14,
+    color: Colors.primary,
+    fontWeight: FontWeight.bold,
+  },
 });
 
 export default LoginScreen;
-

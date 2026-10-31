@@ -6,6 +6,8 @@ import CartScreen from './src/screens/cart/CartScreen';
 import LiveTrackingScreen from './src/screens/orders/LiveTrackingScreen';
 import ProfileScreen from './src/screens/profile/ProfileScreen';
 import LoginScreen from './src/screens/auth/LoginScreen';
+import RegisterScreen from './src/screens/auth/RegisterScreen';
+import ForgotPasswordScreen from './src/screens/auth/ForgotPasswordScreen';
 import SplashScreen from './src/screens/auth/SplashScreen';
 import { Colors } from './src/constants/colors';
 import { useCartStore } from './src/store/cartStore';
@@ -84,6 +86,24 @@ export default function App() {
           </TouchableOpacity>
 
           <TouchableOpacity
+            style={[styles.previewBtn, currentScreen === 'Register' && styles.previewBtnActive]}
+            onPress={() => setCurrentScreen('Register')}
+          >
+            <Text style={[styles.previewBtnText, currentScreen === 'Register' && styles.previewBtnTextActive]}>
+              📝 Register
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.previewBtn, currentScreen === 'ForgotPassword' && styles.previewBtnActive]}
+            onPress={() => setCurrentScreen('ForgotPassword')}
+          >
+            <Text style={[styles.previewBtnText, currentScreen === 'ForgotPassword' && styles.previewBtnTextActive]}>
+              🔑 Reset Pass
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             style={[styles.previewBtn, currentScreen === 'Splash' && styles.previewBtnActive]}
             onPress={() => setCurrentScreen('Splash')}
           >
@@ -104,6 +124,8 @@ export default function App() {
                   handleOpenStore(params?.storeId);
                 } else if (screen === 'Cart') {
                   setCurrentScreen('Cart');
+                } else if (screen === 'Profile') {
+                  setCurrentScreen('Profile');
                 }
               },
             }}
@@ -140,9 +162,39 @@ export default function App() {
 
         {currentScreen === 'Login' && (
           <LoginScreen
+            onLoginSuccess={() => setCurrentScreen('Home')}
+            onGoToRegister={() => setCurrentScreen('Register')}
+            onForgotPassword={() => setCurrentScreen('ForgotPassword')}
             navigation={{
-              navigate: () => {},
+              navigate: (screen) => {
+                if (screen === 'Register') setCurrentScreen('Register');
+                if (screen === 'ForgotPassword') setCurrentScreen('ForgotPassword');
+              },
               replace: () => setCurrentScreen('Home'),
+            }}
+          />
+        )}
+
+        {currentScreen === 'Register' && (
+          <RegisterScreen
+            onRegisterSuccess={() => setCurrentScreen('Home')}
+            onGoToLogin={() => setCurrentScreen('Login')}
+            navigation={{
+              navigate: (screen) => {
+                if (screen === 'Login') setCurrentScreen('Login');
+              },
+              replace: () => setCurrentScreen('Home'),
+            }}
+          />
+        )}
+
+        {currentScreen === 'ForgotPassword' && (
+          <ForgotPasswordScreen
+            onGoToLogin={() => setCurrentScreen('Login')}
+            navigation={{
+              navigate: (screen) => {
+                if (screen === 'Login') setCurrentScreen('Login');
+              },
             }}
           />
         )}
@@ -166,7 +218,9 @@ const styles = StyleSheet.create({
   },
   previewBar: {
     backgroundColor: '#0F172A',
-    paddingVertical: 8,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1E293B',
   },
   previewScroll: {
     paddingHorizontal: 12,
@@ -174,8 +228,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   previewBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
     borderRadius: 8,
     backgroundColor: '#1E293B',
   },
