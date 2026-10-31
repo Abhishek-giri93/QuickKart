@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { adminApi } from './services/api';
 import './App.css';
 
 export default function App() {
@@ -36,10 +37,44 @@ export default function App() {
     { code: 'FREEDEL', discount: 'Free Delivery', minOrder: '₹149', usedCount: 2319, status: 'Active' },
   ]);
 
-  const handleVerifySeller = (id, newStatus) => {
+  // Live Platform KPI Metrics
+  const [metrics, setMetrics] = useState({
+    gmv: '₹2,48,920',
+    ordersToday: '1,428',
+    activeStores: '142',
+    ridersOnDuty: '68',
+  });
+
+  useEffect(() => {
+    adminApi.getOverview()
+      .then((res) => {
+        if (res?.data) {
+          setMetrics({
+            gmv: `₹${(res.data.gmv || 0).toLocaleString('en-IN')}`,
+            ordersToday: `${res.data.ordersToday || 0}`,
+            activeStores: `${res.data.activeStores || 0}`,
+            ridersOnDuty: `${res.data.activeRiders || 0}`,
+          });
+        }
+      })
+      .catch(() => {
+        // Retain initial mock values if backend is offline
+      });
+  }, []);
+
+  const handleVerifySeller = async (id, newStatus) => {
     setSellers((prev) =>
       prev.map((s) => (s.id === id ? { ...s, status: newStatus } : s))
     );
+
+    if (id.includes('-') && id.length > 20) {
+      try {
+        const backendStatus = newStatus === 'Approved' ? 'ACTIVE' : 'REJECTED';
+        await adminApi.updateStoreStatus(id, backendStatus);
+      } catch (err) {
+        console.warn('Backend store update failed:', err.message);
+      }
+    }
   };
 
   const pendingSellersCount = sellers.filter((s) => s.status.includes('Pending')).length;
@@ -182,7 +217,7 @@ export default function App() {
                     <span className="kpi-title">Gross Merchandise Value</span>
                     <div className="kpi-icon-bubble green">💰</div>
                   </div>
-                  <div className="kpi-value">₹2,48,920</div>
+                  <div className="kpi-value">{metrics.gmv}</div>
                   <span className="kpi-trend positive">↑ +18.4% this week</span>
                 </div>
 
@@ -191,7 +226,7 @@ export default function App() {
                     <span className="kpi-title">Total Orders Today</span>
                     <div className="kpi-icon-bubble blue">📦</div>
                   </div>
-                  <div className="kpi-value">1,428</div>
+                  <div className="kpi-value">{metrics.ordersToday}</div>
                   <span className="kpi-trend positive">✓ 98.2% on-time</span>
                 </div>
 
@@ -200,7 +235,7 @@ export default function App() {
                     <span className="kpi-title">Active Local Stores</span>
                     <div className="kpi-icon-bubble orange">🏪</div>
                   </div>
-                  <div className="kpi-value">142</div>
+                  <div className="kpi-value">{metrics.activeStores}</div>
                   <span className="kpi-trend warning">{pendingSellersCount} approvals pending</span>
                 </div>
 
@@ -209,7 +244,7 @@ export default function App() {
                     <span className="kpi-title">Riders on Duty</span>
                     <div className="kpi-icon-bubble purple">🛵</div>
                   </div>
-                  <div className="kpi-value">68</div>
+                  <div className="kpi-value">{metrics.ridersOnDuty}</div>
                   <span className="kpi-trend neutral">Avg ETA: 18.2 min</span>
                 </div>
               </div>
