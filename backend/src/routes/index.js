@@ -39,6 +39,7 @@ import categoryRouter from '../modules/categories/category.routes.js';
 import storeRouter from '../modules/stores/store.routes.js';
 import productRouter from '../modules/products/product.routes.js';
 import inventoryRouter from '../modules/inventory/inventory.routes.js';
+import cartRouter from '../modules/cart/cart.routes.js';
 
 router.use('/auth', authRouter);
 router.use('/customers', customerRouter);
@@ -48,8 +49,8 @@ router.use('/categories', categoryRouter);
 router.use('/stores', storeRouter);
 router.use('/products', productRouter);
 router.use('/inventory', inventoryRouter);
+router.use('/cart', cartRouter);
 
-// import cartRouter        from '../modules/cart/cart.routes.js';
 // import ordersRouter      from '../modules/orders/orders.routes.js';
 // import deliveriesRouter  from '../modules/deliveries/deliveries.routes.js';
 // import paymentsRouter    from '../modules/payments/payments.routes.js';
