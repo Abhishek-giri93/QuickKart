@@ -12,7 +12,7 @@ import { FontSize, FontWeight } from '../../constants/typography';
 const OrdersScreen = () => {
   const [activeTab, setActiveTab] = useState('Preparing');
 
-  const ordersData = [
+  const [orders, setOrders] = useState([
     {
       id: 'QK-9210',
       status: 'Preparing',
@@ -55,7 +55,7 @@ const OrdersScreen = () => {
       orderTime: '1 hr ago',
       riderAssigned: 'Delivered by Ramesh',
     },
-  ];
+  ]);
 
   const handleMarkReady = (orderId) => {
     setOrders((prev) =>
