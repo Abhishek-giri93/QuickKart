@@ -30,11 +30,22 @@ const CartScreen = ({ onBackToShopping, onOrderPlaced }) => {
   const grandTotal = Math.max(0, itemsTotal + deliveryFee + platformFee - discount);
 
   const handleApplyCoupon = () => {
-    if (couponCode.toUpperCase() === 'QUICK50') {
+    const code = couponCode.trim().toUpperCase();
+    if (code === 'QUICK50') {
       setAppliedCoupon({ code: 'QUICK50', discount: 50 });
       Alert.alert('Success! 🎉', '₹50 discount applied on your order!');
+    } else if (code === 'WELCOME100') {
+      if (itemsTotal < 299) {
+        Alert.alert('Minimum Order Required', 'WELCOME100 requires a minimum order of ₹299');
+        return;
+      }
+      setAppliedCoupon({ code: 'WELCOME100', discount: 100 });
+      Alert.alert('Success! 🎉', '₹100 discount applied on your order!');
+    } else if (code === 'FREEDEL') {
+      setAppliedCoupon({ code: 'FREEDEL', discount: deliveryFee });
+      Alert.alert('Success! 🎉', 'Free Delivery coupon applied!');
     } else {
-      Alert.alert('Invalid Coupon', 'Please enter a valid code (Try QUICK50)');
+      Alert.alert('Invalid Coupon', 'Available codes: QUICK50, WELCOME100, FREEDEL');
     }
   };
 
@@ -62,15 +73,27 @@ const CartScreen = ({ onBackToShopping, onOrderPlaced }) => {
           <Text style={styles.orderEta}>Estimated Delivery: 20-25 mins 🕒</Text>
         </View>
 
-        <TouchableOpacity
-          style={styles.continueBtn}
-          onPress={() => {
-            setOrderSuccess(false);
-            onBackToShopping?.();
-          }}
-        >
-          <Text style={styles.continueBtnText}>Continue Shopping 🛍️</Text>
-        </TouchableOpacity>
+        <View style={styles.successActions}>
+          <TouchableOpacity
+            style={styles.trackOrderBtn}
+            onPress={() => {
+              setOrderSuccess(false);
+              onOrderPlaced?.();
+            }}
+          >
+            <Text style={styles.trackOrderBtnText}>🛵 Track Order Live</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.continueBtn}
+            onPress={() => {
+              setOrderSuccess(false);
+              onBackToShopping?.();
+            }}
+          >
+            <Text style={styles.continueBtnText}>Continue Shopping 🛍️</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -478,13 +501,28 @@ const styles = StyleSheet.create({
   },
   orderIdLabel: { fontSize: FontSize.sm, fontWeight: '700', color: Colors.text.primary },
   orderEta: { fontSize: FontSize.xs, color: Colors.status.success, fontWeight: '700', marginTop: 4 },
-  continueBtn: {
-    backgroundColor: Colors.primary,
+  successActions: {
+    width: '100%',
+    gap: 12,
+  },
+  trackOrderBtn: {
+    backgroundColor: '#0F172A',
     paddingHorizontal: 28,
     paddingVertical: 14,
     borderRadius: BorderRadius.pill,
+    alignItems: 'center',
   },
-  continueBtnText: { color: '#FFFFFF', fontSize: FontSize.base, fontWeight: '700' },
+  trackOrderBtnText: { color: '#FFFFFF', fontSize: FontSize.base, fontWeight: '700' },
+  continueBtn: {
+    backgroundColor: '#F1F5F9',
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    borderRadius: BorderRadius.pill,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+  },
+  continueBtnText: { color: '#334155', fontSize: FontSize.base, fontWeight: '700' },
 });
 
 export default CartScreen;
