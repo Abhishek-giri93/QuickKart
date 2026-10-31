@@ -1,16 +1,46 @@
-# React + Vite
+# QuickKart — Admin Operations Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> **Enterprise Operations & Analytics Portal for QuickKart**  
+> Built with React 19, Vite, and modern CSS architecture.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 💻 Overview
 
-## React Compiler
+The Admin Dashboard provides QuickKart platform operators with real-time visibility into the hyperlocal delivery ecosystem:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Executive KPI Cards**: Real-time Gross Merchandise Value (GMV), Active Orders, Platform Commission Revenue, and Online Delivery Partners.
+- **Store Verification & Moderation**: Review pending merchant KYC documents, approve new store applications, or suspend non-compliant sellers.
+- **Promotions & Coupon Manager**: Create and activate discount coupons (percentage or flat discount, minimum order value, validity periods).
+- **Fleet Dispatch Oversight**: Monitor real-time order delivery statuses from placement to final customer OTP verification.
 
-## Expanding the Oxlint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## 🚀 Running the Admin Dashboard
+
+### Prerequisites
+- Node.js v18 or higher
+- QuickKart Backend API running on `http://localhost:5000`
+
+### Quick Start
+```bash
+# 1. Navigate to the admin dashboard folder
+cd apps/admin-dashboard
+
+# 2. Install dependencies (if not already installed)
+npm install
+
+# 3. Start the Vite development server
+npm run dev
+```
+
+The portal will open automatically at:
+👉 **`http://localhost:5173`**
+
+---
+
+## 🎨 UI & Layout Highlights
+
+- **100% Full-Screen Layout**: Fixed previous Vite boilerplate constraints to fill full widescreen monitors with zero wasted margins.
+- **Enterprise Dark Slate Theme**: `#0F172A` sidebar with `#3B82F6` accent styling.
+- **Interactive Sidebar Navigation**: Seamlessly switch between Analytics Overview, Store Approvals, Orders Monitoring, Coupon Creator, and Moderation.
