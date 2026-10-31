@@ -37,6 +37,8 @@ import sellerRouter from '../modules/users/seller.routes.js';
 import deliveryPartnerRouter from '../modules/users/deliveryPartner.routes.js';
 import categoryRouter from '../modules/categories/category.routes.js';
 import storeRouter from '../modules/stores/store.routes.js';
+import productRouter from '../modules/products/product.routes.js';
+import inventoryRouter from '../modules/inventory/inventory.routes.js';
 
 router.use('/auth', authRouter);
 router.use('/customers', customerRouter);
@@ -44,9 +46,9 @@ router.use('/sellers', sellerRouter);
 router.use('/delivery-partners', deliveryPartnerRouter);
 router.use('/categories', categoryRouter);
 router.use('/stores', storeRouter);
+router.use('/products', productRouter);
+router.use('/inventory', inventoryRouter);
 
-// import productsRouter    from '../modules/products/products.routes.js';
-// import inventoryRouter   from '../modules/inventory/inventory.routes.js';
 // import cartRouter        from '../modules/cart/cart.routes.js';
 // import ordersRouter      from '../modules/orders/orders.routes.js';
 // import deliveriesRouter  from '../modules/deliveries/deliveries.routes.js';
