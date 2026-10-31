@@ -54,6 +54,12 @@ const config = {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 15 * 60 * 1000, // 15 minutes
     max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10) || 100,
   },
+
+  razorpay: {
+    keyId: process.env.RAZORPAY_KEY_ID || 'rzp_test_mock_key',
+    keySecret: process.env.RAZORPAY_KEY_SECRET || 'rzp_test_mock_secret',
+    webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET || 'rzp_test_webhook_secret',
+  },
 };
 
 export { config, validateEnv };
