@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView } from 'react-native';
+import {
+  View, Text, TouchableOpacity, StyleSheet,
+  StatusBar, ScrollView, Platform,
+} from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import HomeScreen from './src/screens/home/HomeScreen';
 import StoreDetailScreen from './src/screens/home/StoreDetailScreen';
 import CartScreen from './src/screens/cart/CartScreen';
@@ -12,9 +16,10 @@ import SplashScreen from './src/screens/auth/SplashScreen';
 import { Colors } from './src/constants/colors';
 import { useCartStore } from './src/store/cartStore';
 
-export default function App() {
+function CustomerAppContent() {
   const [currentScreen, setCurrentScreen] = useState('Home');
   const [activeStoreId, setActiveStoreId] = useState('store_001');
+  const [showSwitcher, setShowSwitcher] = useState(true);
 
   const cartItems = useCartStore((state) => state.items);
   const cartCount = cartItems.reduce((sum, item) => sum + item.qty, 0);
@@ -25,94 +30,125 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom', 'left', 'right']}>
+      {/* Fixed Solid Status Bar (Prevents Content Under Notch) */}
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="#0F172A"
+        translucent={false}
+      />
 
-      {/* Screen Preview Switcher Bar */}
-      <View style={styles.previewBar}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.previewScroll}>
-          <TouchableOpacity
-            style={[styles.previewBtn, currentScreen === 'Home' && styles.previewBtnActive]}
-            onPress={() => setCurrentScreen('Home')}
-          >
-            <Text style={[styles.previewBtnText, currentScreen === 'Home' && styles.previewBtnTextActive]}>
-              🏠 Home
-            </Text>
-          </TouchableOpacity>
+      {/* Screen Preview Switcher Bar (Collapsible) */}
+      {showSwitcher ? (
+        <View style={styles.previewBar}>
+          <View style={styles.previewBarHeader}>
+            <Text style={styles.previewBarTitle}>⚡ QuickKart Screen Switcher</Text>
+            <TouchableOpacity
+              onPress={() => setShowSwitcher(false)}
+              style={styles.hideBtn}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.hideBtnText}>Hide ✕</Text>
+            </TouchableOpacity>
+          </View>
 
-          <TouchableOpacity
-            style={[styles.previewBtn, currentScreen === 'Store' && styles.previewBtnActive]}
-            onPress={() => setCurrentScreen('Store')}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.previewScroll}
           >
-            <Text style={[styles.previewBtnText, currentScreen === 'Store' && styles.previewBtnTextActive]}>
-              🏪 Store
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.previewBtn, currentScreen === 'Home' && styles.previewBtnActive]}
+              onPress={() => setCurrentScreen('Home')}
+            >
+              <Text style={[styles.previewBtnText, currentScreen === 'Home' && styles.previewBtnTextActive]}>
+                🏠 Home
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.previewBtn, currentScreen === 'Cart' && styles.previewBtnActive]}
-            onPress={() => setCurrentScreen('Cart')}
-          >
-            <Text style={[styles.previewBtnText, currentScreen === 'Cart' && styles.previewBtnTextActive]}>
-              🛒 Cart {cartCount > 0 ? `(${cartCount})` : ''}
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.previewBtn, currentScreen === 'Store' && styles.previewBtnActive]}
+              onPress={() => setCurrentScreen('Store')}
+            >
+              <Text style={[styles.previewBtnText, currentScreen === 'Store' && styles.previewBtnTextActive]}>
+                🏪 Store
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.previewBtn, currentScreen === 'Track' && styles.previewBtnActive]}
-            onPress={() => setCurrentScreen('Track')}
-          >
-            <Text style={[styles.previewBtnText, currentScreen === 'Track' && styles.previewBtnTextActive]}>
-              🛵 Live Track
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.previewBtn, currentScreen === 'Cart' && styles.previewBtnActive]}
+              onPress={() => setCurrentScreen('Cart')}
+            >
+              <Text style={[styles.previewBtnText, currentScreen === 'Cart' && styles.previewBtnTextActive]}>
+                🛒 Cart {cartCount > 0 ? `(${cartCount})` : ''}
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.previewBtn, currentScreen === 'Profile' && styles.previewBtnActive]}
-            onPress={() => setCurrentScreen('Profile')}
-          >
-            <Text style={[styles.previewBtnText, currentScreen === 'Profile' && styles.previewBtnTextActive]}>
-              👤 Profile
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.previewBtn, currentScreen === 'Track' && styles.previewBtnActive]}
+              onPress={() => setCurrentScreen('Track')}
+            >
+              <Text style={[styles.previewBtnText, currentScreen === 'Track' && styles.previewBtnTextActive]}>
+                🛵 Live Track
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.previewBtn, currentScreen === 'Login' && styles.previewBtnActive]}
-            onPress={() => setCurrentScreen('Login')}
-          >
-            <Text style={[styles.previewBtnText, currentScreen === 'Login' && styles.previewBtnTextActive]}>
-              🔐 Login
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.previewBtn, currentScreen === 'Profile' && styles.previewBtnActive]}
+              onPress={() => setCurrentScreen('Profile')}
+            >
+              <Text style={[styles.previewBtnText, currentScreen === 'Profile' && styles.previewBtnTextActive]}>
+                👤 Profile
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.previewBtn, currentScreen === 'Register' && styles.previewBtnActive]}
-            onPress={() => setCurrentScreen('Register')}
-          >
-            <Text style={[styles.previewBtnText, currentScreen === 'Register' && styles.previewBtnTextActive]}>
-              📝 Register
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.previewBtn, currentScreen === 'Login' && styles.previewBtnActive]}
+              onPress={() => setCurrentScreen('Login')}
+            >
+              <Text style={[styles.previewBtnText, currentScreen === 'Login' && styles.previewBtnTextActive]}>
+                🔐 Login
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.previewBtn, currentScreen === 'ForgotPassword' && styles.previewBtnActive]}
-            onPress={() => setCurrentScreen('ForgotPassword')}
-          >
-            <Text style={[styles.previewBtnText, currentScreen === 'ForgotPassword' && styles.previewBtnTextActive]}>
-              🔑 Reset Pass
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.previewBtn, currentScreen === 'Register' && styles.previewBtnActive]}
+              onPress={() => setCurrentScreen('Register')}
+            >
+              <Text style={[styles.previewBtnText, currentScreen === 'Register' && styles.previewBtnTextActive]}>
+                📝 Register
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.previewBtn, currentScreen === 'Splash' && styles.previewBtnActive]}
-            onPress={() => setCurrentScreen('Splash')}
-          >
-            <Text style={[styles.previewBtnText, currentScreen === 'Splash' && styles.previewBtnTextActive]}>
-              ✨ Splash
-            </Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
+            <TouchableOpacity
+              style={[styles.previewBtn, currentScreen === 'ForgotPassword' && styles.previewBtnActive]}
+              onPress={() => setCurrentScreen('ForgotPassword')}
+            >
+              <Text style={[styles.previewBtnText, currentScreen === 'ForgotPassword' && styles.previewBtnTextActive]}>
+                🔑 Reset Pass
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.previewBtn, currentScreen === 'Splash' && styles.previewBtnActive]}
+              onPress={() => setCurrentScreen('Splash')}
+            >
+              <Text style={[styles.previewBtnText, currentScreen === 'Splash' && styles.previewBtnTextActive]}>
+                ✨ Splash
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+      ) : (
+        /* Floating Pill to reopen switcher if hidden */
+        <TouchableOpacity
+          style={styles.floatingShowBtn}
+          onPress={() => setShowSwitcher(true)}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.floatingShowBtnText}>📱 Switch Screen ({currentScreen}) ▾</Text>
+        </TouchableOpacity>
+      )}
 
       {/* Render Selected Screen */}
       <View style={styles.screenWrapper}>
@@ -211,16 +247,50 @@ export default function App() {
   );
 }
 
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <CustomerAppContent />
+    </SafeAreaProvider>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: '#0F172A',
   },
   previewBar: {
     backgroundColor: '#0F172A',
-    paddingVertical: 10,
+    paddingTop: 6,
+    paddingBottom: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#1E293B',
+  },
+  previewBarHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginBottom: 6,
+  },
+  previewBarTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#94A3B8',
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+  },
+  hideBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  hideBtnText: {
+    fontSize: 11,
+    color: '#CBD5E1',
+    fontWeight: '600',
   },
   previewScroll: {
     paddingHorizontal: 12,
@@ -245,7 +315,27 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '700',
   },
+  floatingShowBtn: {
+    backgroundColor: '#0F172A',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    alignSelf: 'center',
+    borderRadius: 20,
+    marginVertical: 4,
+    borderWidth: 1,
+    borderColor: '#334155',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  floatingShowBtnText: {
+    color: '#F8FAFC',
+    fontSize: 11,
+    fontWeight: '700',
+  },
   screenWrapper: {
     flex: 1,
+    backgroundColor: '#FAFAFA',
   },
 });
