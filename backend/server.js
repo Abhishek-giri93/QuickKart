@@ -14,10 +14,12 @@
  */
 
 import 'dotenv/config';
+import http from 'http';
 import { validateEnv } from './src/config/env.config.js';
 import { config } from './src/config/env.config.js';
 import prisma from './src/config/prisma.js';
 import app from './src/app.js';
+import { initSocketServer } from './src/socket/socket.js';
 
 // ── Step 1: Validate environment variables ────────────────────────────────────
 try {
@@ -37,8 +39,11 @@ async function startServer() {
     await prisma.$connect();
     console.log('✅ Database connected successfully');
 
-    // Start HTTP server
-    server = app.listen(PORT, () => {
+    // Create HTTP & Socket.IO server
+    const httpServer = http.createServer(app);
+    initSocketServer(httpServer);
+
+    server = httpServer.listen(PORT, () => {
       console.log('');
       console.log('╔══════════════════════════════════════════╗');
       console.log('║        🛒  QuickKart API Server          ║');

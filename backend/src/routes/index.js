@@ -43,6 +43,7 @@ import cartRouter from '../modules/cart/cart.routes.js';
 import orderRouter from '../modules/orders/order.routes.js';
 import deliveryRouter from '../modules/deliveries/delivery.routes.js';
 import paymentRouter from '../modules/payments/payment.routes.js';
+import notificationRouter from '../modules/notifications/notification.routes.js';
 
 router.use('/auth', authRouter);
 router.use('/customers', customerRouter);
@@ -56,6 +57,7 @@ router.use('/cart', cartRouter);
 router.use('/orders', orderRouter);
 router.use('/deliveries', deliveryRouter);
 router.use('/payments', paymentRouter);
+router.use('/notifications', notificationRouter);
 
 // import reviewsRouter     from '../modules/reviews/reviews.routes.js';
 // import couponsRouter     from '../modules/coupons/coupons.routes.js';
