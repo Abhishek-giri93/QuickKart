@@ -49,3 +49,4 @@ During development, a collapsible **QuickKart Screen Switcher** is pinned at the
 - `📝 Register`: Customer registration with Indian phone & password validation.
 - `🔑 Reset Pass`: Password recovery flow.
 - `Hide ✕`: Minimizes the preview switcher into a non-intrusive floating button.
+
