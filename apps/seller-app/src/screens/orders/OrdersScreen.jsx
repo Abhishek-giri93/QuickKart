@@ -57,7 +57,23 @@ const OrdersScreen = () => {
     },
   ];
 
-  const filteredOrders = ordersData.filter((o) => o.status === activeTab);
+  const handleMarkReady = (orderId) => {
+    setOrders((prev) =>
+      prev.map((o) => (o.id === orderId ? { ...o, status: 'Ready' } : o))
+    );
+    Alert.alert('Order Ready! 📦', `Order #${orderId} marked as packed and ready for delivery partner pickup.`);
+    setActiveTab('Ready');
+  };
+
+  const handleHandover = (orderId) => {
+    setOrders((prev) =>
+      prev.map((o) => (o.id === orderId ? { ...o, status: 'Completed', riderAssigned: 'Delivered by Rider' } : o))
+    );
+    Alert.alert('Handover Verified ✅', `Order #${orderId} handed over to delivery partner.`);
+    setActiveTab('Completed');
+  };
+
+  const filteredOrders = orders.filter((o) => o.status === activeTab);
 
   return (
     <View style={styles.container}>
@@ -78,7 +94,7 @@ const OrdersScreen = () => {
             onPress={() => setActiveTab(tab)}
           >
             <Text style={[styles.tabBtnText, activeTab === tab && styles.tabBtnTextActive]}>
-              {tab} ({ordersData.filter((o) => o.status === tab).length})
+              {tab} ({orders.filter((o) => o.status === tab).length})
             </Text>
           </TouchableOpacity>
         ))}
@@ -130,7 +146,7 @@ const OrdersScreen = () => {
                 {order.status === 'Preparing' && (
                   <TouchableOpacity
                     style={styles.readyBtn}
-                    onPress={() => Alert.alert('Order Ready! 📦', `Order #${order.id} marked as packed and ready for delivery partner pickup.`)}
+                    onPress={() => handleMarkReady(order.id)}
                   >
                     <Text style={styles.readyBtnText}>Mark as Packed & Ready 📦</Text>
                   </TouchableOpacity>
@@ -139,7 +155,7 @@ const OrdersScreen = () => {
                 {order.status === 'Ready' && (
                   <TouchableOpacity
                     style={styles.handoverBtn}
-                    onPress={() => Alert.alert('Handover Verified', `Handed over to rider for delivery.`)}
+                    onPress={() => handleHandover(order.id)}
                   >
                     <Text style={styles.handoverBtnText}>Verify & Handover to Rider 🛵</Text>
                   </TouchableOpacity>

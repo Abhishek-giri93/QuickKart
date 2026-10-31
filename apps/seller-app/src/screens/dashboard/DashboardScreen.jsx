@@ -19,7 +19,7 @@ const DashboardScreen = ({ onNavigateToOrders, onNavigateToProducts, onNavigateT
     { label: 'Store Rating', value: '⭐ 4.6', icon: '🌟', sub: 'Based on 238 reviews' },
   ];
 
-  const incomingOrders = [
+  const [incomingOrders, setIncomingOrders] = useState([
     {
       id: 'QK-9214',
       customerName: 'Rahul Verma',
@@ -78,40 +78,9 @@ const DashboardScreen = ({ onNavigateToOrders, onNavigateToProducts, onNavigateT
         {/* Urgent Incoming Orders Box */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Incoming Orders (New)</Text>
-          <TouchableOpacity onPress={() => onNavigateToOrders?.()}>
-            <Text style={styles.viewAllText}>View All ({incomingOrders.length})</Text>
-          </TouchableOpacity>
-        </View>
-
-        {incomingOrders.map((order) => (
-          <View key={order.id} style={styles.orderCard}>
-            <View style={styles.orderHeader}>
-              <View>
-                <Text style={styles.orderId}>Order #{order.id}</Text>
-                <Text style={styles.orderCustomer}>{order.customerName} • <Text style={{ color: Colors.primary, fontWeight: '700' }}>{order.timeAgo}</Text></Text>
-              </View>
-              <Text style={styles.orderPrice}>₹{order.total}</Text>
-            </View>
-
-            <Text style={styles.orderItemsText} numberOfLines={2}>{order.items}</Text>
-            <Text style={styles.orderPaymentText}>💳 {order.payment}</Text>
-
-            <View style={styles.orderActions}>
-              <TouchableOpacity
-                style={styles.rejectBtn}
-                onPress={() => Alert.alert('Reject Order', 'Are you sure you want to decline this order?', [
-                  { text: 'Cancel', style: 'cancel' },
-                  { text: 'Decline', style: 'destructive' }
-                ])}
-              >
-                <Text style={styles.rejectBtnText}>Decline</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
+          <TouchableOpacity
                 style={styles.acceptBtn}
-                onPress={() => {
-                  Alert.alert('Order Accepted! 🍳', `Order #${order.id} marked as 'Preparing'. Rider is being assigned.`);
-                }}
+                onPress={() => handleAcceptOrder(order.id)}
               >
                 <Text style={styles.acceptBtnText}>Accept & Prepare 🍳</Text>
               </TouchableOpacity>
@@ -244,6 +213,27 @@ const styles = StyleSheet.create({
   statLabel: { fontSize: FontSize.xs, fontWeight: '600', color: Colors.text.secondary, marginTop: 6 },
   statSub: { fontSize: 10, color: '#16A34A', marginTop: 2 },
 
+  emptyIncomingBox: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.md,
+    padding: Spacing.lg,
+    alignItems: 'center',
+    marginBottom: Spacing.md,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderStyle: 'dashed',
+  },
+  emptyIncomingTitle: {
+    fontSize: FontSize.base,
+    fontWeight: FontWeight.bold,
+    color: Colors.text.primary,
+  },
+  emptyIncomingSub: {
+    fontSize: FontSize.xs,
+    color: Colors.text.secondary,
+    textAlign: 'center',
+    marginTop: 4,
+  },
   actionGrid: { flexDirection: 'row', gap: 10 },
   actionBtn: {
     flex: 1,

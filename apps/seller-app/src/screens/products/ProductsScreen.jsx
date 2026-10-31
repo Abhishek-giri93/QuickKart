@@ -18,6 +18,7 @@ const ProductsScreen = () => {
     { id: '5', name: 'Aashirvaad Superior MP Atta', category: 'Groceries', price: 235, unit: '5 Kg', inStock: true, stockCount: 7 },
   ]);
 
+  const [searchQuery, setSearchQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [newProductName, setNewProductName] = useState('');
   const [newProductCategory, setNewProductCategory] = useState('Groceries');
@@ -74,7 +75,10 @@ const ProductsScreen = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {products.map((item) => (
+        {products.filter((p) =>
+          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.category.toLowerCase().includes(searchQuery.toLowerCase())
+        ).map((item) => (
           <View key={item.id} style={styles.productCard}>
             <View style={styles.productLeft}>
               <View style={styles.productIconBox}>
@@ -199,6 +203,24 @@ const styles = StyleSheet.create({
   },
   addBtnText: { color: Colors.primary, fontWeight: '700', fontSize: FontSize.xs },
 
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.sm,
+    marginBottom: 4,
+    borderRadius: BorderRadius.sm,
+    paddingHorizontal: Spacing.md,
+    height: 44,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: FontSize.sm,
+    color: Colors.text.primary,
+  },
   scrollContent: { padding: Spacing.md, gap: Spacing.sm },
 
   productCard: {
