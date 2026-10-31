@@ -36,7 +36,32 @@ const DashboardScreen = ({ onNavigateToOrders, onNavigateToProducts, onNavigateT
       timeAgo: ' Just now',
       payment: 'Cash on Delivery',
     },
-  ];
+  ]);
+
+  const handleDeclineOrder = (orderId) => {
+    Alert.alert('Decline Order', `Are you sure you want to decline Order #${orderId}?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Decline',
+        style: 'destructive',
+        onPress: () => {
+          setIncomingOrders((prev) => prev.filter((o) => o.id !== orderId));
+        },
+      },
+    ]);
+  };
+
+  const handleAcceptOrder = (orderId) => {
+    setIncomingOrders((prev) => prev.filter((o) => o.id !== orderId));
+    Alert.alert(
+      'Order Accepted! 🍳',
+      `Order #${orderId} moved to Kitchen Preparation. Delivery rider is being alerted.`,
+      [
+        { text: 'Stay Here', style: 'cancel' },
+        { text: 'View in Orders →', onPress: () => onNavigateToOrders?.() },
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -78,15 +103,51 @@ const DashboardScreen = ({ onNavigateToOrders, onNavigateToProducts, onNavigateT
         {/* Urgent Incoming Orders Box */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Incoming Orders (New)</Text>
-          <TouchableOpacity
-                style={styles.acceptBtn}
-                onPress={() => handleAcceptOrder(order.id)}
-              >
-                <Text style={styles.acceptBtnText}>Accept & Prepare 🍳</Text>
-              </TouchableOpacity>
-            </View>
+          <TouchableOpacity onPress={() => onNavigateToOrders?.()}>
+            <Text style={styles.viewAllText}>View All ({incomingOrders.length})</Text>
+          </TouchableOpacity>
+        </View>
+
+        {incomingOrders.length === 0 ? (
+          <View style={styles.emptyIncomingBox}>
+            <Text style={{ fontSize: 32, marginBottom: 4 }}>🎉</Text>
+            <Text style={styles.emptyIncomingTitle}>All Caught Up!</Text>
+            <Text style={styles.emptyIncomingSub}>No pending orders. New orders will appear here automatically.</Text>
           </View>
-        ))}
+        ) : (
+          incomingOrders.map((order) => (
+            <View key={order.id} style={styles.orderCard}>
+              <View style={styles.orderHeader}>
+                <View>
+                  <Text style={styles.orderId}>Order #{order.id}</Text>
+                  <Text style={styles.orderCustomer}>
+                    {order.customerName} • <Text style={{ color: Colors.primary, fontWeight: '700' }}>{order.timeAgo}</Text>
+                  </Text>
+                </View>
+                <Text style={styles.orderPrice}>₹{order.total}</Text>
+              </View>
+
+              <Text style={styles.orderItemsText} numberOfLines={2}>{order.items}</Text>
+              <Text style={styles.orderPaymentText}>💳 {order.payment}</Text>
+
+              <View style={styles.orderActions}>
+                <TouchableOpacity
+                  style={styles.rejectBtn}
+                  onPress={() => handleDeclineOrder(order.id)}
+                >
+                  <Text style={styles.rejectBtnText}>Decline</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.acceptBtn}
+                  onPress={() => handleAcceptOrder(order.id)}
+                >
+                  <Text style={styles.acceptBtnText}>Accept & Prepare 🍳</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))
+        )}
 
         {/* 4 Performance Metrics Grid */}
         <Text style={[styles.sectionTitle, { marginTop: Spacing.md, marginBottom: Spacing.sm }]}>Today's Performance</Text>
