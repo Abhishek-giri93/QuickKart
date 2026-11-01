@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  TextInput, StatusBar, RefreshControl, Alert, Image,
+  TextInput, StatusBar, RefreshControl, Alert,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Spacing, BorderRadius, Shadow } from '../../constants/spacing';
@@ -72,26 +72,38 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#0F172A" />
 
-      {/* Top Header with Logo */}
+      {/* Top Location & Brand Bar */}
       <View style={styles.topHeader}>
-        {/* Logo Row */}
-        <View style={styles.logoRow}>
-          <Image
-            source={require('../../../assets/logo.png')}
-            style={styles.headerLogo}
-            resizeMode="contain"
-          />
-          <TouchableOpacity
-            style={styles.notifBtn}
-            onPress={() => Alert.alert('Notifications', 'No unread notifications right now.')}
-          >
-            <Text style={{ fontSize: 18 }}>🔔</Text>
-          </TouchableOpacity>
+        {/* Brand Row */}
+        <View style={styles.brandRow}>
+          <View style={styles.brandTitleContainer}>
+            <Text style={styles.brandTextQ}>Quick</Text>
+            <Text style={styles.brandTextK}>Kart</Text>
+            <View style={styles.expressBadge}>
+              <Text style={styles.expressBadgeText}>⚡ 10m</Text>
+            </View>
+          </View>
+          <View style={styles.headerRightIcons}>
+            <TouchableOpacity
+              style={styles.iconCircle}
+              onPress={() => Alert.alert('Notifications', 'No unread notifications right now.')}
+            >
+              <Text style={{ fontSize: 16 }}>🔔</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.iconCircle, { backgroundColor: '#FF6B35' }]}
+              onPress={() => navigation?.navigate?.('Profile')}
+            >
+              <Text style={{ fontSize: 15 }}>👤</Text>
+            </TouchableOpacity>
+          </View>
         </View>
+
+        {/* Location Row */}
         <View style={styles.locationContainer}>
           <View style={styles.etaBadge}>
             <View style={styles.pulseDot} />
-            <Text style={styles.etaText}>12 MINS DELIVERY</Text>
+            <Text style={styles.etaText}>10 MINS DELIVERY</Text>
           </View>
           <TouchableOpacity
             style={styles.addressRow}
@@ -102,13 +114,6 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.addressChevron}>▾</Text>
           </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
-            style={[styles.iconCircle, { backgroundColor: '#FF6B35', marginLeft: 'auto' }]}
-            onPress={() => navigation?.navigate?.('Profile')}
-          >
-            <Text style={{ fontSize: 16 }}>👤</Text>
-          </TouchableOpacity>
       </View>
 
       <ScrollView

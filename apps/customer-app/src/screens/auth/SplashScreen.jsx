@@ -1,7 +1,7 @@
-// Customer App — Professional Splash Screen with Official Logo
+// Customer App — Professional Clean Splash Screen
 
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, StatusBar, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, ActivityIndicator } from 'react-native';
 
 const SplashScreen = ({ navigation, onComplete }) => {
   useEffect(() => {
@@ -20,30 +20,27 @@ const SplashScreen = ({ navigation, onComplete }) => {
       <StatusBar barStyle="light-content" backgroundColor="#0F172A" />
       
       <View style={styles.centerCard}>
-        {/* Official QuickKart Brand Logo */}
-        <Image
-          source={require('../../../assets/logo.png')}
-          style={styles.logoImage}
-          resizeMode="contain"
-        />
+        <View style={styles.iconCircle}>
+          <Text style={{ fontSize: 44 }}>⚡</Text>
+        </View>
+
+        <Text style={styles.brandTitle}>
+          Quick<Text style={{ color: '#FF6B35' }}>Kart</Text>
+        </Text>
         
-        <View style={styles.badgeRow}>
-          <View style={styles.badge}>
-            <Text style={styles.badgeDot}>⚡</Text>
-            <Text style={styles.badgeText}>HYPERLOCAL EXPRESS</Text>
-          </View>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>HYPERLOCAL EXPRESS • 10-15 MINS</Text>
         </View>
 
         <Text style={styles.subTagline}>
-          Groceries, Food & Essentials in 10-15 Minutes
+          Groceries, Fresh Produce & Daily Essentials
         </Text>
       </View>
 
-      {/* Bottom Loading Indicator & Version */}
       <View style={styles.bottomSection}>
         <ActivityIndicator size="small" color="#FF6B35" style={{ marginBottom: 12 }} />
-        <Text style={styles.loadingText}>Connecting to nearby stores...</Text>
-        <Text style={styles.versionText}>QuickKart v1.2.0 • Made with ❤️</Text>
+        <Text style={styles.loadingText}>Connecting to nearby neighborhood stores...</Text>
+        <Text style={styles.versionText}>QuickKart v1.2.0 • Ultra-Fast Hyperlocal Platform</Text>
       </View>
     </View>
   );
@@ -64,28 +61,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
-  logoImage: {
-    width: 280,
-    height: 100,
+  iconCircle: {
+    width: 84,
+    height: 84,
+    borderRadius: 42,
+    backgroundColor: 'rgba(255, 107, 53, 0.15)',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 107, 53, 0.35)',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 16,
   },
-  badgeRow: {
-    flexDirection: 'row',
-    marginTop: 8,
+  brandTitle: {
+    fontSize: 42,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: -1,
+    marginBottom: 8,
   },
   badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: 'rgba(255, 107, 53, 0.15)',
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255, 107, 53, 0.3)',
-  },
-  badgeDot: {
-    fontSize: 12,
-    marginRight: 6,
+    marginTop: 6,
   },
   badgeText: {
     color: '#FF6B35',
@@ -94,7 +95,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
   },
   subTagline: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#94A3B8',
     marginTop: 14,
     textAlign: 'center',

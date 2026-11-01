@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  KeyboardAvoidingView, Platform, ScrollView, StatusBar, Image,
+  KeyboardAvoidingView, Platform, ScrollView, StatusBar,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Spacing } from '../../constants/spacing';
@@ -84,12 +84,10 @@ const LoginScreen = ({ navigation, onLoginSuccess, onGoToRegister, onForgotPassw
       >
         {/* Brand Header */}
         <View style={styles.header}>
-          <Image
-            source={require('../../../assets/logo.png')}
-            style={styles.brandLogo}
-            resizeMode="contain"
-          />
-          <Text style={styles.title}>Welcome to QuickKart</Text>
+          <View style={styles.logoBadge}>
+            <Text style={styles.logoText}>⚡</Text>
+          </View>
+          <Text style={styles.title}>Welcome to Quick<Text style={{ color: Colors.primary }}>Kart</Text></Text>
           <Text style={styles.subtitle}>Superfast food & grocery delivery in 15 minutes</Text>
         </View>
 
@@ -185,12 +183,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.xl,
     paddingBottom: Spacing.xxl,
-  },
-  brandLogo: {
-    width: 200,
-    height: 60,
-    alignSelf: 'center',
-    marginBottom: 12,
   },
   header: {
     alignItems: 'center',

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  KeyboardAvoidingView, Platform, ScrollView, StatusBar, Image,
+  KeyboardAvoidingView, Platform, ScrollView, StatusBar,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Spacing } from '../../constants/spacing';
@@ -95,12 +95,10 @@ const RegisterScreen = ({ navigation, onRegisterSuccess, onGoToLogin }) => {
       >
         {/* Brand Header */}
         <View style={styles.header}>
-          <Image
-            source={require('../../../assets/logo.png')}
-            style={styles.brandLogo}
-            resizeMode="contain"
-          />
-          <Text style={styles.title}>Create Your Account</Text>
+          <View style={styles.logoBadge}>
+            <Text style={styles.logoText}>🛍️</Text>
+          </View>
+          <Text style={styles.title}>Create Quick<Text style={{ color: Colors.primary }}>Kart</Text> Account</Text>
           <Text style={styles.subtitle}>Sign up to order food, groceries and daily needs</Text>
         </View>
 
@@ -230,12 +228,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.xl,
     paddingBottom: Spacing.xxl,
-  },
-  brandLogo: {
-    width: 180,
-    height: 52,
-    alignSelf: 'center',
-    marginBottom: 10,
   },
   header: {
     alignItems: 'center',
