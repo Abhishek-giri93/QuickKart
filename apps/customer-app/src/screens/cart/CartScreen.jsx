@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  TextInput, StatusBar, Alert, Modal,
+  TextInput, StatusBar, Alert, Modal, Image,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Spacing, BorderRadius, Shadow } from '../../constants/spacing';
@@ -122,7 +122,11 @@ export default function CartScreen({ onBackToShopping, onOrderPlaced }) {
     return (
       <View style={styles.emptyContainer}>
         <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-        <Text style={{ fontSize: 72, marginBottom: Spacing.md }}>🛒</Text>
+        <Image
+          source={require('../../../assets/illustrations/empty-cart.png')}
+          style={styles.emptyImg}
+          resizeMode="contain"
+        />
         <Text style={styles.emptyTitle}>Your Cart is Empty</Text>
         <Text style={styles.emptySubtitle}>Explore verified nearby stores and add daily essentials in 12 minutes!</Text>
         <TouchableOpacity
@@ -840,6 +844,11 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: FontSize.sm,
     fontWeight: '800',
+  },
+  emptyImg: {
+    width: 190,
+    height: 190,
+    marginBottom: 16,
   },
   emptyContainer: {
     flex: 1,

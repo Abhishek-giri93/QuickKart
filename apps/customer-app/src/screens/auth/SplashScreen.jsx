@@ -1,7 +1,7 @@
 // Customer App — Professional Clean Splash Screen
 
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, StatusBar, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, ActivityIndicator, Image } from 'react-native';
 
 const SplashScreen = ({ navigation, onComplete }) => {
   useEffect(() => {
@@ -20,20 +20,18 @@ const SplashScreen = ({ navigation, onComplete }) => {
       <StatusBar barStyle="light-content" backgroundColor="#0F172A" />
       
       <View style={styles.centerCard}>
-        <View style={styles.iconCircle}>
-          <Text style={{ fontSize: 44 }}>⚡</Text>
-        </View>
-
-        <Text style={styles.brandTitle}>
-          Quick<Text style={{ color: '#FF6B35' }}>Kart</Text>
-        </Text>
+        <Image
+          source={require('../../../assets/branding/logo-white.png')}
+          style={styles.splashLogo}
+          resizeMode="contain"
+        />
         
         <View style={styles.badge}>
           <Text style={styles.badgeText}>HYPERLOCAL EXPRESS • 10-15 MINS</Text>
         </View>
 
         <Text style={styles.subTagline}>
-          Groceries, Fresh Produce & Daily Essentials
+          Local Shops • Fresh Products • Fast Delivery
         </Text>
       </View>
 
@@ -54,6 +52,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 50,
     paddingHorizontal: 24,
+  },
+  splashLogo: {
+    width: 270,
+    height: 89,
+    marginBottom: 12,
   },
   centerCard: {
     flex: 1,

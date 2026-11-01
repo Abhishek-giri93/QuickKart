@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  TextInput, StatusBar, RefreshControl, Alert,
+  TextInput, StatusBar, RefreshControl, Alert, Image,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Spacing, BorderRadius, Shadow } from '../../constants/spacing';
@@ -11,6 +11,44 @@ import { FontSize, FontWeight } from '../../constants/typography';
 import { mockStores, mockCategories } from '../../mock-data/stores';
 import { apiClient } from '../../services/apiClient';
 import { ENDPOINTS } from '../../constants/api';
+
+
+const PROMO_BANNERS = [
+  {
+    id: 'b1',
+    code: 'QUICK50',
+    title: 'FLAT 50% OFF',
+    sub: 'Daily Groceries & Essentials',
+    image: require('../../../assets/banners/offer-50.png'),
+    badgeColor: '#FF6B35',
+  },
+  {
+    id: 'b2',
+    code: 'FREEDEL',
+    title: 'Morning Breakfast',
+    sub: 'Fresh Milk, Bread & Eggs in 10m',
+    image: require('../../../assets/banners/breakfast.png'),
+    badgeColor: '#0284C7',
+  },
+  {
+    id: 'b3',
+    code: 'WELCOME100',
+    title: 'Festive Celebration',
+    sub: 'Sweets, Snacks & Dry Fruits',
+    image: require('../../../assets/banners/festival.png'),
+    badgeColor: '#16A34A',
+  },
+];
+
+const CATEGORY_ITEMS = [
+  { id: 'all', name: 'All', icon: '⚡' },
+  { id: 'grocery', name: 'Grocery', image: require('../../../assets/categories/grocery.png') },
+  { id: 'dairy', name: 'Dairy & Milk', image: require('../../../assets/categories/dairy.png') },
+  { id: 'veg', name: 'Vegetables', image: require('../../../assets/categories/vegetables.png') },
+  { id: 'fruits', name: 'Fresh Fruits', image: require('../../../assets/categories/fruits.png') },
+  { id: 'bread', name: 'Bakery', icon: '🍞' },
+  { id: 'snacks', name: 'Snacks', icon: '🍿' },
+];
 
 export default function HomeScreen({ navigation }) {
   const [stores, setStores] = useState([]);
@@ -153,57 +191,51 @@ export default function HomeScreen({ navigation }) {
 
         {/* Promotional Hero Banners */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.promoBannersRow}>
-          <View style={[styles.promoCard, { backgroundColor: '#FF6B35' }]}>
-            <View style={{ flex: 1 }}>
-              <View style={styles.promoCodeBadge}>
-                <Text style={styles.promoCodeText}>CODE: QUICK50</Text>
+          {PROMO_BANNERS.map((banner) => (
+            <View key={banner.id} style={styles.promoCard}>
+              <Image source={banner.image} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
+              <View style={styles.promoCardOverlay} />
+              <View style={styles.promoContent}>
+                <View style={[styles.promoCodeBadge, { backgroundColor: banner.badgeColor }]}>
+                  <Text style={styles.promoCodeText}>CODE: {banner.code}</Text>
+                </View>
+                <Text style={styles.promoTitle}>{banner.title}</Text>
+                <Text style={styles.promoSub}>{banner.sub}</Text>
+                <TouchableOpacity
+                  style={styles.claimBtn}
+                  activeOpacity={0.8}
+                  onPress={() => Alert.alert('Offer Copied! 🎉', `Coupon ${banner.code} will be applied automatically at checkout.`)}
+                >
+                  <Text style={styles.claimBtnText}>Claim Offer →</Text>
+                </TouchableOpacity>
               </View>
-              <Text style={styles.promoTitle}>FLAT ₹50 OFF</Text>
-              <Text style={styles.promoSub}>On orders above ₹199 • Instant Delivery</Text>
             </View>
-            <Text style={{ fontSize: 44, marginLeft: 8 }}>🛒</Text>
-          </View>
-
-          <View style={[styles.promoCard, { backgroundColor: '#0284C7' }]}>
-            <View style={{ flex: 1 }}>
-              <View style={[styles.promoCodeBadge, { backgroundColor: '#E0F2FE' }]}>
-                <Text style={[styles.promoCodeText, { color: '#0369A1' }]}>10 MINS BREAKFAST</Text>
-              </View>
-              <Text style={styles.promoTitle}>Morning Dairy</Text>
-              <Text style={styles.promoSub}>Fresh Milk, Bread & Farm Eggs</Text>
-            </View>
-            <Text style={{ fontSize: 44, marginLeft: 8 }}>🥛</Text>
-          </View>
-
-          <View style={[styles.promoCard, { backgroundColor: '#16A34A' }]}>
-            <View style={{ flex: 1 }}>
-              <View style={[styles.promoCodeBadge, { backgroundColor: '#DCFCE7' }]}>
-                <Text style={[styles.promoCodeText, { color: '#15803D' }]}>FARM DIRECT</Text>
-              </View>
-              <Text style={styles.promoTitle}>Pure Organic</Text>
-              <Text style={styles.promoSub}>Handpicked fresh greens & veggies</Text>
-            </View>
-            <Text style={{ fontSize: 44, marginLeft: 8 }}>🥦</Text>
-          </View>
+          ))}
         </ScrollView>
 
-        {/* Category Horizontal Filter Pills */}
+        {/* Category Image Navigation */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Explore Categories</Text>
         </View>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
-          {categories.map((cat) => {
+          {CATEGORY_ITEMS.map((cat) => {
             const isSelected = selectedCategory === cat.name || (!selectedCategory && cat.name === 'All');
             return (
               <TouchableOpacity
-                key={cat.id || 'all'}
-                style={[styles.categoryChip, isSelected && styles.categoryChipActive]}
+                key={cat.id}
+                style={styles.categoryCircleItem}
                 onPress={() => setSelectedCategory(cat.name === 'All' ? null : cat.name)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.categoryIcon}>{cat.icon}</Text>
-                <Text style={[styles.categoryLabel, isSelected && styles.categoryLabelActive]}>
+                <View style={[styles.categoryCircleWrapper, isSelected && styles.categoryCircleWrapperActive]}>
+                  {cat.image ? (
+                    <Image source={cat.image} style={styles.categoryCircleImg} resizeMode="cover" />
+                  ) : (
+                    <Text style={styles.categoryCircleEmoji}>{cat.icon}</Text>
+                  )}
+                </View>
+                <Text style={[styles.categoryCircleLabel, isSelected && styles.categoryCircleLabelActive]} numberOfLines={1}>
                   {cat.name}
                 </Text>
               </TouchableOpacity>
@@ -275,6 +307,111 @@ export default function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  promoBannersRow: {
+    paddingHorizontal: Spacing.md,
+    gap: 14,
+    marginBottom: Spacing.md,
+  },
+  promoCard: {
+    width: 300,
+    height: 145,
+    borderRadius: 16,
+    overflow: 'hidden',
+    position: 'relative',
+    ...Shadow.md,
+  },
+  promoCardOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(15, 23, 42, 0.65)',
+  },
+  promoContent: {
+    flex: 1,
+    padding: 16,
+    justifyContent: 'space-between',
+    zIndex: 2,
+  },
+  promoCodeBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    alignSelf: 'flex-start',
+  },
+  promoCodeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.6,
+  },
+  promoTitle: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '900',
+    letterSpacing: -0.5,
+  },
+  promoSub: {
+    color: '#E2E8F0',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  claimBtn: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.4)',
+  },
+  claimBtnText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  categoryScroll: {
+    paddingHorizontal: Spacing.md,
+    gap: 16,
+    paddingVertical: 10,
+  },
+  categoryCircleItem: {
+    alignItems: 'center',
+    width: 68,
+  },
+  categoryCircleWrapper: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#F1F5F9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
+    ...Shadow.sm,
+  },
+  categoryCircleWrapperActive: {
+    borderColor: Colors.primary,
+    borderWidth: 2.5,
+    backgroundColor: '#FFF7ED',
+  },
+  categoryCircleImg: {
+    width: '100%',
+    height: '100%',
+  },
+  categoryCircleEmoji: {
+    fontSize: 26,
+  },
+  categoryCircleLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#475569',
+    marginTop: 6,
+    textAlign: 'center',
+  },
+  categoryCircleLabelActive: {
+    color: Colors.primary,
+    fontWeight: '800',
+  },
+
   container: {
     flex: 1,
     backgroundColor: '#F8FAFC',
