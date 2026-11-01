@@ -1,9 +1,9 @@
-// Customer App — Store Detail Screen
+// Customer App — Store Detail Screen (Quick-Commerce Polish)
 
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  FlatList, StatusBar, Alert,
+  TextInput, StatusBar, Alert,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Spacing, BorderRadius, Shadow } from '../../constants/spacing';
@@ -12,7 +12,7 @@ import { mockStores } from '../../mock-data/stores';
 import { mockProducts } from '../../mock-data/products';
 import { useCartStore } from '../../store/cartStore';
 
-const StoreDetailScreen = ({ storeId = 'store_001', navigation, onGoToCart }) => {
+export default function StoreDetailScreen({ storeId = 'store_001', navigation, onGoToCart }) {
   const store = mockStores.find((s) => s.id === storeId) || mockStores[0];
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -85,96 +85,139 @@ const StoreDetailScreen = ({ storeId = 'store_001', navigation, onGoToCart }) =>
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={Colors.primaryDark} />
+      <StatusBar barStyle="light-content" backgroundColor="#0F172A" />
 
-      {/* Header Banner */}
-      <View style={styles.headerBanner}>
-        <View style={styles.headerTop}>
-          <TouchableOpacity
-            style={styles.backBtn}
-            onPress={() => navigation?.goBack?.()}
-          >
-            <Text style={styles.backBtnText}>←</Text>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle} numberOfLines={1}>{store.name}</Text>
-          <View style={{ width: 36 }} />
+      {/* Top Navigation Bar */}
+      <View style={styles.navBar}>
+        <TouchableOpacity
+          style={styles.backBtn}
+          onPress={() => navigation?.goBack?.()}
+        >
+          <Text style={styles.backBtnText}>←</Text>
+        </TouchableOpacity>
+
+        <View style={{ flex: 1, marginHorizontal: 12 }}>
+          <Text style={styles.navStoreTitle} numberOfLines={1}>{store.name}</Text>
+          <Text style={styles.navStoreSub}>{store.deliveryTime} mins • {store.distance} km away</Text>
         </View>
 
-        {/* Store Info Card */}
-        <View style={styles.storeCard}>
-          <View style={styles.storeRow}>
+        <TouchableOpacity
+          style={styles.searchToggleBtn}
+          onPress={() => Alert.alert('Share Store', `Sharing ${store.name} with friends!`)}
+        >
+          <Text style={{ fontSize: 18 }}>↗️</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Store Profile Card */}
+        <View style={styles.storeHeroCard}>
+          <View style={styles.storeHeaderRow}>
             <View style={styles.storeEmojiBox}>
-              <Text style={{ fontSize: 32 }}>🏪</Text>
+              <Text style={{ fontSize: 36 }}>🏪</Text>
             </View>
-            <View style={{ flex: 1, marginLeft: Spacing.sm }}>
-              <Text style={styles.storeName}>{store.name}</Text>
-              <Text style={styles.storeAddress} numberOfLines={1}>{store.address}</Text>
-              <View style={styles.storeBadges}>
-                <View style={styles.badgeRating}>
-                  <Text style={styles.badgeRatingText}>⭐ {store.rating}</Text>
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Text style={styles.storeTitle} numberOfLines={1}>{store.name}</Text>
+                <View style={styles.ratingBadge}>
+                  <Text style={styles.ratingText}>⭐ {store.rating}</Text>
                 </View>
-                <Text style={styles.storeDot}>•</Text>
-                <Text style={styles.storeMetaText}>🕒 {store.deliveryTime} mins</Text>
-                <Text style={styles.storeDot}>•</Text>
-                <Text style={styles.storeMetaText}>📍 {store.distance} km</Text>
+              </View>
+              <Text style={styles.storeAddress}>{store.address}</Text>
+              <View style={styles.fssaiRow}>
+                <Text style={styles.fssaiText}>FSSAI Lic. 22819001294812 ✅</Text>
               </View>
             </View>
           </View>
-        </View>
-      </View>
 
-      {/* Category Pills */}
-      <View style={styles.categoryBar}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: Spacing.md, gap: 8 }}>
+          {/* Feature Badges Strip */}
+          <View style={styles.featuresStrip}>
+            <View style={styles.featureItem}>
+              <Text style={styles.featureIcon}>⚡</Text>
+              <Text style={styles.featureText}>{store.deliveryTime} Mins ETA</Text>
+            </View>
+            <View style={styles.featureDivider} />
+            <View style={styles.featureItem}>
+              <Text style={styles.featureIcon}>🛵</Text>
+              <Text style={styles.featureText}>Free Delivery on ₹199+</Text>
+            </View>
+            <View style={styles.featureDivider} />
+            <View style={styles.featureItem}>
+              <Text style={styles.featureIcon}>🛡️</Text>
+              <Text style={styles.featureText}>Verified Hygiene</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* In-store Search Bar */}
+        <View style={styles.searchBox}>
+          <Text style={styles.searchIcon}>🔍</Text>
+          <TextInput
+            style={styles.searchInput}
+            placeholder={`Search items in ${store.name}...`}
+            placeholderTextColor="#94A3B8"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery ? (
+            <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearBtn}>
+              <Text style={{ color: '#64748B', fontSize: 12, fontWeight: '700' }}>✕</Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+
+        {/* Category Horizontal Filter Pills */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
           {categories.map((cat) => (
             <TouchableOpacity
               key={cat}
-              style={[styles.catPill, selectedCategory === cat && styles.catPillActive]}
+              style={[styles.categoryBtn, selectedCategory === cat && styles.categoryBtnActive]}
               onPress={() => setSelectedCategory(cat)}
             >
-              <Text style={[styles.catPillText, selectedCategory === cat && styles.catPillTextActive]}>
+              <Text style={[styles.categoryBtnText, selectedCategory === cat && styles.categoryBtnTextActive]}>
                 {cat}
               </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
-      </View>
 
-      {/* Products List */}
-      <ScrollView contentContainerStyle={styles.productList} showsVerticalScrollIndicator={false}>
-        <Text style={styles.sectionHeading}>
-          {selectedCategory === 'All' ? 'All Products' : selectedCategory} ({filteredProducts.length})
-        </Text>
+        {/* Products Section */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>
+            {selectedCategory === 'All' ? 'All Products' : selectedCategory} ({filteredProducts.length})
+          </Text>
+        </View>
 
+        {/* Product Cards List */}
         {filteredProducts.map((product) => {
           const qty = getItemQty(product.id);
-
           return (
             <View key={product.id} style={styles.productCard}>
-              {/* Product Info */}
-              <View style={styles.productDetails}>
-                <Text style={styles.productName}>{product.name}</Text>
-                <Text style={styles.productUnit}>{product.unit}</Text>
-                <View style={styles.priceRow}>
-                  <Text style={styles.productPrice}>₹{product.price}</Text>
-                  {product.originalPrice > product.price && (
-                    <Text style={styles.productOriginalPrice}>₹{product.originalPrice}</Text>
-                  )}
-                  {product.discount > 0 && (
-                    <View style={styles.discountBadge}>
-                      <Text style={styles.discountText}>{product.discount}% OFF</Text>
+              <View style={styles.productInfoCol}>
+                <View style={styles.productBadgeRow}>
+                  {product.discount > 0 ? (
+                    <View style={styles.discountPill}>
+                      <Text style={styles.discountPillText}>{product.discount}% OFF</Text>
                     </View>
-                  )}
+                  ) : null}
+                  <Text style={styles.unitText}>{product.unit}</Text>
                 </View>
-                <Text style={styles.productDesc} numberOfLines={2}>
-                  {product.description}
-                </Text>
+
+                <Text style={styles.productName}>{product.name}</Text>
+                <Text style={styles.productDesc} numberOfLines={2}>{product.description}</Text>
+
+                <View style={styles.priceRow}>
+                  <Text style={styles.priceText}>₹{product.price}</Text>
+                  {product.originalPrice > product.price ? (
+                    <Text style={styles.originalPriceText}>₹{product.originalPrice}</Text>
+                  ) : null}
+                </View>
               </View>
 
-              {/* Product Action */}
-              <View style={styles.productAction}>
+              {/* Product Action & Image Column */}
+              <View style={styles.productActionCol}>
                 <View style={styles.productImageBox}>
-                  <Text style={{ fontSize: 32 }}>🛍️</Text>
+                  <Text style={{ fontSize: 36 }}>{product.icon || '🛍️'}</Text>
                 </View>
 
                 {qty === 0 ? (
@@ -206,125 +249,293 @@ const StoreDetailScreen = ({ storeId = 'store_001', navigation, onGoToCart }) =>
             </View>
           );
         })}
-        <View style={{ height: cartItemCount > 0 ? 90 : 20 }} />
+
+        <View style={{ height: cartItemCount > 0 ? 100 : 30 }} />
       </ScrollView>
 
-      {/* Floating View Cart Bar */}
+      {/* Floating Bottom Cart Dock */}
       {cartItemCount > 0 && (
-        <View style={styles.floatingCartBar}>
-          <View>
-            <Text style={styles.cartBarCount}>{cartItemCount} {cartItemCount === 1 ? 'ITEM' : 'ITEMS'}</Text>
-            <Text style={styles.cartBarPrice}>₹{cartSubtotal} <Text style={styles.cartBarPlusTax}>plus taxes</Text></Text>
+        <View style={styles.floatingCartDock}>
+          <View style={styles.dockLeft}>
+            <View style={styles.dockCountBadge}>
+              <Text style={styles.dockCountText}>{cartItemCount} {cartItemCount === 1 ? 'ITEM' : 'ITEMS'}</Text>
+            </View>
+            <Text style={styles.dockPrice}>₹{cartSubtotal} <Text style={styles.dockTaxes}>plus taxes</Text></Text>
           </View>
+
           <TouchableOpacity
-            style={styles.cartBarBtn}
+            style={styles.dockViewCartBtn}
             onPress={() => onGoToCart?.()}
-            activeOpacity={0.8}
+            activeOpacity={0.85}
           >
-            <Text style={styles.cartBarBtnText}>View Cart 🛒 →</Text>
+            <Text style={styles.dockViewCartText}>View Cart →</Text>
           </TouchableOpacity>
         </View>
       )}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC' },
-
-  headerBanner: {
-    backgroundColor: Colors.primary,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.xl + 20,
-    paddingHorizontal: Spacing.md,
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
   },
-  headerTop: {
+  navBar: {
+    backgroundColor: '#0F172A',
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1E293B',
   },
   backBtn: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.25)',
+    backgroundColor: '#1E293B',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  backBtnText: { color: '#FFFFFF', fontSize: 20, fontWeight: '700' },
-  headerTitle: { color: '#FFFFFF', fontSize: FontSize.md, fontWeight: '700' },
-
-  storeCard: {
+  backBtnText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  navStoreTitle: {
+    color: '#FFFFFF',
+    fontSize: FontSize.base,
+    fontWeight: '800',
+  },
+  navStoreSub: {
+    color: '#94A3B8',
+    fontSize: 11,
+    marginTop: 2,
+  },
+  searchToggleBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#1E293B',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scrollContent: {
+    paddingBottom: 20,
+  },
+  storeHeroCard: {
     backgroundColor: '#FFFFFF',
+    margin: Spacing.md,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
-    ...Shadow.md,
-    marginBottom: -35,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    ...Shadow.sm,
   },
-  storeRow: { flexDirection: 'row', alignItems: 'center' },
+  storeHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
   storeEmojiBox: {
-    width: 54,
-    height: 54,
+    width: 56,
+    height: 56,
     borderRadius: BorderRadius.sm,
-    backgroundColor: Colors.surfaceSecondary,
+    backgroundColor: '#F8FAFC',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
-  storeName: { fontSize: FontSize.md, fontWeight: FontWeight.bold, color: Colors.text.primary },
-  storeAddress: { fontSize: FontSize.xs, color: Colors.text.secondary, marginTop: 2 },
-  storeBadges: { flexDirection: 'row', alignItems: 'center', marginTop: 6 },
-  badgeRating: {
-    backgroundColor: '#DCFCE7',
+  storeTitle: {
+    fontSize: FontSize.base,
+    fontWeight: '800',
+    color: Colors.text.primary,
+    flex: 1,
+    marginRight: 8,
+  },
+  ratingBadge: {
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  ratingText: {
+    color: '#B45309',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  storeAddress: {
+    fontSize: 11,
+    color: Colors.text.secondary,
+    marginTop: 2,
+  },
+  fssaiRow: {
+    marginTop: 4,
+  },
+  fssaiText: {
+    fontSize: 10,
+    color: '#16A34A',
+    fontWeight: '700',
+  },
+  featuresStrip: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+  },
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  featureIcon: {
+    fontSize: 12,
+    marginRight: 4,
+  },
+  featureText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#475569',
+  },
+  featureDivider: {
+    width: 1,
+    height: 14,
+    backgroundColor: '#E2E8F0',
+  },
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: Spacing.md,
+    marginBottom: 8,
+    borderRadius: BorderRadius.sm,
+    paddingHorizontal: Spacing.md,
+    height: 44,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  searchIcon: {
+    fontSize: 14,
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: FontSize.sm,
+    color: Colors.text.primary,
+  },
+  clearBtn: {
+    padding: 6,
+  },
+  categoryScroll: {
+    paddingHorizontal: Spacing.md,
+    gap: 8,
+    paddingVertical: 8,
+  },
+  categoryBtn: {
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.pill,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  categoryBtnActive: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  categoryBtnText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#475569',
+  },
+  categoryBtnTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  sectionHeader: {
+    paddingHorizontal: Spacing.md,
+    marginTop: 12,
+    marginBottom: 8,
+  },
+  sectionTitle: {
+    fontSize: FontSize.sm,
+    fontWeight: '800',
+    color: Colors.text.primary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  productCard: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: Spacing.md,
+    marginBottom: 10,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    ...Shadow.xs,
+  },
+  productInfoCol: {
+    flex: 1,
+    paddingRight: Spacing.md,
+  },
+  productBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 4,
+  },
+  discountPill: {
+    backgroundColor: '#DCFCE7',
+    paddingHorizontal: 5,
     paddingVertical: 2,
     borderRadius: 4,
   },
-  badgeRatingText: { color: '#166534', fontSize: FontSize.xs, fontWeight: '700' },
-  storeDot: { marginHorizontal: 6, color: Colors.text.tertiary },
-  storeMetaText: { fontSize: FontSize.xs, color: Colors.text.secondary },
-
-  categoryBar: {
-    backgroundColor: '#FFFFFF',
-    paddingTop: 45,
-    paddingBottom: Spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+  discountPillText: {
+    color: '#15803D',
+    fontSize: 9,
+    fontWeight: '800',
   },
-  catPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: BorderRadius.pill,
-    backgroundColor: '#F1F5F9',
+  unitText: {
+    fontSize: 11,
+    color: Colors.text.tertiary,
+    fontWeight: '600',
   },
-  catPillActive: { backgroundColor: Colors.primary },
-  catPillText: { fontSize: FontSize.sm, color: Colors.text.secondary, fontWeight: '500' },
-  catPillTextActive: { color: '#FFFFFF', fontWeight: '700' },
-
-  productList: { paddingHorizontal: Spacing.md, paddingTop: Spacing.md },
-  sectionHeading: { fontSize: FontSize.base, fontWeight: FontWeight.bold, color: Colors.text.primary, marginBottom: Spacing.sm },
-
-  productCard: {
+  productName: {
+    fontSize: FontSize.base,
+    fontWeight: '800',
+    color: Colors.text.primary,
+  },
+  productDesc: {
+    fontSize: 11,
+    color: Colors.text.secondary,
+    marginTop: 4,
+    lineHeight: 16,
+  },
+  priceRow: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    borderRadius: BorderRadius.sm,
-    padding: Spacing.md,
-    marginBottom: Spacing.md,
-    ...Shadow.xs,
-    borderWidth: 1,
-    borderColor: '#EDF2F7',
+    alignItems: 'baseline',
+    gap: 6,
+    marginTop: 8,
   },
-  productDetails: { flex: 1, paddingRight: Spacing.md },
-  productName: { fontSize: FontSize.base, fontWeight: FontWeight.semiBold, color: Colors.text.primary },
-  productUnit: { fontSize: FontSize.xs, color: Colors.text.tertiary, marginTop: 2 },
-  priceRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4, gap: 6 },
-  productPrice: { fontSize: FontSize.md, fontWeight: FontWeight.bold, color: Colors.text.primary },
-  productOriginalPrice: { fontSize: FontSize.sm, color: Colors.text.tertiary, textDecorationLine: 'line-through' },
-  discountBadge: { backgroundColor: '#FEF3C7', paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3 },
-  discountText: { color: '#B45309', fontSize: 10, fontWeight: '700' },
-  productDesc: { fontSize: FontSize.xs, color: Colors.text.secondary, marginTop: 6, lineHeight: 16 },
-
-  productAction: { alignItems: 'center', width: 90 },
+  priceText: {
+    fontSize: FontSize.md,
+    fontWeight: '800',
+    color: Colors.text.primary,
+  },
+  originalPriceText: {
+    fontSize: 12,
+    color: '#94A3B8',
+    textDecorationLine: 'line-through',
+  },
+  productActionCol: {
+    alignItems: 'center',
+    width: 90,
+  },
   productImageBox: {
     width: 75,
     height: 75,
@@ -333,30 +544,48 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   addBtn: {
-    backgroundColor: '#FFF5F0',
+    backgroundColor: '#FFF7ED',
     borderColor: Colors.primary,
     borderWidth: 1.5,
     borderRadius: 6,
     paddingVertical: 6,
     paddingHorizontal: 16,
     alignItems: 'center',
+    width: '100%',
   },
-  addBtnText: { color: Colors.primary, fontWeight: '700', fontSize: FontSize.sm },
-
+  addBtnText: {
+    color: Colors.primary,
+    fontWeight: '800',
+    fontSize: 12,
+  },
   stepperContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: Colors.primary,
     borderRadius: 6,
-    overflow: 'hidden',
+    width: '100%',
+    paddingVertical: 4,
+    paddingHorizontal: 4,
   },
-  stepperBtn: { paddingHorizontal: 10, paddingVertical: 4 },
-  stepperBtnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
-  stepperQty: { color: '#FFFFFF', fontWeight: '700', fontSize: FontSize.sm, paddingHorizontal: 4 },
-
-  floatingCartBar: {
+  stepperBtn: {
+    paddingHorizontal: 8,
+  },
+  stepperBtnText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  stepperQty: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 13,
+  },
+  floatingCartDock: {
     position: 'absolute',
     bottom: 12,
     left: 12,
@@ -370,17 +599,42 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     ...Shadow.lg,
   },
-  cartBarCount: { color: '#94A3B8', fontSize: 11, fontWeight: '600', letterSpacing: 0.5 },
-  cartBarPrice: { color: '#FFFFFF', fontSize: FontSize.base, fontWeight: '700' },
-  cartBarPlusTax: { color: '#94A3B8', fontSize: 11, fontWeight: '400' },
-  cartBarBtn: {
+  dockLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  dockCountBadge: {
     backgroundColor: Colors.primary,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 4,
+  },
+  dockCountText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  dockPrice: {
+    color: '#FFFFFF',
+    fontSize: FontSize.md,
+    fontWeight: '800',
+  },
+  dockTaxes: {
+    color: '#94A3B8',
+    fontSize: 10,
+    fontWeight: '400',
+  },
+  dockViewCartBtn: {
+    backgroundColor: '#22C55E',
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 8,
     borderRadius: 8,
   },
-  cartBarBtnText: { color: '#FFFFFF', fontWeight: '700', fontSize: FontSize.sm },
+  dockViewCartText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: FontSize.sm,
+  },
 });
-
-export default StoreDetailScreen;
-

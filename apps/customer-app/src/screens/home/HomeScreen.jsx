@@ -1,9 +1,9 @@
-// Customer App — Home Screen
+// Customer App — Home Screen (Enterprise Quick-Commerce Polish)
 
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  FlatList, StatusBar, RefreshControl,
+  TextInput, StatusBar, RefreshControl, Alert, Image,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Spacing, BorderRadius, Shadow } from '../../constants/spacing';
@@ -12,76 +12,11 @@ import { mockStores, mockCategories } from '../../mock-data/stores';
 import { apiClient } from '../../services/apiClient';
 import { ENDPOINTS } from '../../constants/api';
 
-// --- Sub-components ---
-
-const Header = ({ onSearchPress }) => (
-  <View style={headerStyles.container}>
-    <View>
-      <Text style={headerStyles.greeting}>Good morning! 👋</Text>
-      <TouchableOpacity style={headerStyles.locationRow}>
-        <Text style={headerStyles.locationIcon}>📍</Text>
-        <Text style={headerStyles.locationText}>Select Location</Text>
-        <Text style={headerStyles.chevron}>▾</Text>
-      </TouchableOpacity>
-    </View>
-    <TouchableOpacity style={headerStyles.notifBtn}>
-      <Text style={{ fontSize: 22 }}>🔔</Text>
-    </TouchableOpacity>
-  </View>
-);
-
-const SearchBar = ({ onPress }) => (
-  <TouchableOpacity style={searchStyles.bar} onPress={onPress} activeOpacity={0.8}>
-    <Text style={searchStyles.icon}>🔍</Text>
-    <Text style={searchStyles.placeholder}>Search stores, products...</Text>
-  </TouchableOpacity>
-);
-
-const CategoryChip = ({ item, isSelected, onPress }) => (
-  <TouchableOpacity
-    style={[chipStyles.chip, isSelected && { backgroundColor: Colors.primary }]}
-    onPress={onPress}
-  >
-    <Text style={chipStyles.icon}>{item.icon}</Text>
-    <Text style={[chipStyles.label, isSelected && { color: '#FFF' }]}>{item.name}</Text>
-  </TouchableOpacity>
-);
-
-const StoreCard = ({ store, onPress }) => (
-  <TouchableOpacity style={cardStyles.card} onPress={onPress} activeOpacity={0.85}>
-    <View style={cardStyles.imagePlaceholder}>
-      <Text style={{ fontSize: 36 }}>🏪</Text>
-    </View>
-    <View style={cardStyles.info}>
-      <Text style={cardStyles.name} numberOfLines={1}>{store.name}</Text>
-      <Text style={cardStyles.tags} numberOfLines={1}>{store.tags.join(' • ')}</Text>
-      <View style={cardStyles.meta}>
-        <Text style={cardStyles.rating}>⭐ {store.rating}</Text>
-        <Text style={cardStyles.dot}> · </Text>
-        <Text style={cardStyles.time}>🕐 {store.deliveryTime} min</Text>
-        <Text style={cardStyles.dot}> · </Text>
-        <Text style={cardStyles.distance}>📍 {store.distance} km</Text>
-      </View>
-      {store.deliveryFee === 0 ? (
-        <Text style={cardStyles.freeDelivery}>Free Delivery</Text>
-      ) : (
-        <Text style={cardStyles.deliveryFee}>Delivery ₹{store.deliveryFee}</Text>
-      )}
-      {!store.isOpen && (
-        <View style={cardStyles.closedBadge}>
-          <Text style={cardStyles.closedText}>Closed</Text>
-        </View>
-      )}
-    </View>
-  </TouchableOpacity>
-);
-
-// --- Main Screen ---
-
-const HomeScreen = ({ navigation }) => {
+export default function HomeScreen({ navigation }) {
   const [stores, setStores] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -93,13 +28,15 @@ const HomeScreen = ({ navigation }) => {
         const formatted = storeList.map((s) => ({
           id: s.id,
           name: s.name,
-          category: s.category?.name || 'General',
-          rating: s.avgRating || 4.5,
-          deliveryTime: 20,
-          distance: 1.2,
+          category: s.category?.name || 'Groceries',
+          rating: s.avgRating || 4.7,
+          deliveryTime: 12,
+          distance: 0.8,
           deliveryFee: 0,
+          badge: '⚡ FASTEST (12 MINS)',
           isOpen: s.isOpen ?? true,
-          tags: [s.category?.name || 'Grocery', 'Fast Delivery'],
+          tags: [s.category?.name || 'Groceries', 'Fast Delivery', 'Verified'],
+          address: s.addressLine || 'Sector 4, Lakeview',
         }));
         setStores(formatted);
         setCategories([{ id: null, name: 'All', icon: '🌟' }, ...mockCategories]);
@@ -109,13 +46,15 @@ const HomeScreen = ({ navigation }) => {
     } catch {
       // Fall through to mock data
     }
-    await new Promise((r) => setTimeout(r, 600));
+
     setStores(mockStores);
     setCategories([{ id: null, name: 'All', icon: '🌟' }, ...mockCategories]);
     setLoading(false);
   };
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -123,152 +62,538 @@ const HomeScreen = ({ navigation }) => {
     setRefreshing(false);
   };
 
-  const filteredStores = selectedCategory
-    ? stores.filter((s) => s.category === selectedCategory)
-    : stores;
+  const filteredStores = stores.filter((s) => {
+    const matchesCat = !selectedCategory || s.category.toLowerCase().includes(selectedCategory.toLowerCase()) || s.tags?.some(t => t.toLowerCase().includes(selectedCategory.toLowerCase()));
+    const matchesSearch = !searchQuery || s.name.toLowerCase().includes(searchQuery.toLowerCase()) || s.tags?.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesCat && matchesSearch;
+  });
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.surface} />
+      <StatusBar barStyle="light-content" backgroundColor="#0F172A" />
+
+      {/* Top Header with Logo */}
+      <View style={styles.topHeader}>
+        {/* Logo Row */}
+        <View style={styles.logoRow}>
+          <Image
+            source={require('../../../assets/logo.png')}
+            style={styles.headerLogo}
+            resizeMode="contain"
+          />
+          <TouchableOpacity
+            style={styles.notifBtn}
+            onPress={() => Alert.alert('Notifications', 'No unread notifications right now.')}
+          >
+            <Text style={{ fontSize: 18 }}>🔔</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.locationContainer}>
+          <View style={styles.etaBadge}>
+            <View style={styles.pulseDot} />
+            <Text style={styles.etaText}>12 MINS DELIVERY</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.addressRow}
+            activeOpacity={0.8}
+            onPress={() => Alert.alert('Delivery Address', 'Delivering to:\nFlat 402, Lakeview Enclave, Sector 4\n(Verified ⚡)')}
+          >
+            <Text style={styles.addressLabel}>Home — Flat 402, Sector 4</Text>
+            <Text style={styles.addressChevron}>▾</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+            style={[styles.iconCircle, { backgroundColor: '#FF6B35', marginLeft: 'auto' }]}
+            onPress={() => navigation?.navigate?.('Profile')}
+          >
+            <Text style={{ fontSize: 16 }}>👤</Text>
+          </TouchableOpacity>
+      </View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
       >
-        {/* Header */}
-        <Header />
-
         {/* Search Bar */}
-        <View style={{ paddingHorizontal: Spacing.md, marginBottom: Spacing.md }}>
-          <SearchBar onPress={() => navigation.navigate('Search')} />
+        <View style={styles.searchBox}>
+          <Text style={styles.searchIcon}>🔍</Text>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search 'milk, farm veggies, atta, bread'..."
+            placeholderTextColor="#94A3B8"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery ? (
+            <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearSearchBtn}>
+              <Text style={{ color: '#64748B', fontWeight: '700', fontSize: 12 }}>✕</Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
 
-        {/* Banner / Promo */}
-        <View style={styles.banner}>
-          <Text style={styles.bannerText}>🎉 Free delivery on your first order!</Text>
-        </View>
+        {/* Quick Trending Keyword Chips */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trendingRow}>
+          {['⚡ Amul Milk', '🍅 Farm Tomatoes', '🍞 Whole Wheat Bread', '🧂 Tata Salt', '🍪 Maggi'].map((k) => (
+            <TouchableOpacity
+              key={k}
+              style={styles.trendingChip}
+              onPress={() => setSearchQuery(k.replace(/^[^\s]+\s/, ''))}
+            >
+              <Text style={styles.trendingText}>{k}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
-        {/* Categories */}
-        <Text style={styles.sectionTitle}>Shop by Category</Text>
-        <FlatList
-          data={categories}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => String(item.id)}
-          contentContainerStyle={{ paddingHorizontal: Spacing.md, gap: Spacing.xs }}
-          renderItem={({ item }) => (
-            <CategoryChip
-              item={item}
-              isSelected={selectedCategory === item.id}
-              onPress={() => setSelectedCategory(item.id === selectedCategory ? null : item.id)}
-            />
-          )}
-        />
-
-        {/* Nearby Stores */}
-        <View style={styles.storesSection}>
-          <Text style={styles.sectionTitle}>Nearby Stores</Text>
-          {loading ? (
-            <Text style={styles.loadingText}>Loading stores...</Text>
-          ) : filteredStores.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>🏪</Text>
-              <Text style={styles.emptyText}>No stores found in this category</Text>
+        {/* Promotional Hero Banners */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.promoBannersRow}>
+          <View style={[styles.promoCard, { backgroundColor: '#FF6B35' }]}>
+            <View style={{ flex: 1 }}>
+              <View style={styles.promoCodeBadge}>
+                <Text style={styles.promoCodeText}>CODE: QUICK50</Text>
+              </View>
+              <Text style={styles.promoTitle}>FLAT ₹50 OFF</Text>
+              <Text style={styles.promoSub}>On orders above ₹199 • Instant Delivery</Text>
             </View>
-          ) : (
-            filteredStores.map((store) => (
-              <StoreCard
-                key={store.id}
-                store={store}
-                onPress={() => navigation.navigate('StoreDetail', { storeId: store.id, storeName: store.name })}
-              />
-            ))
-          )}
+            <Text style={{ fontSize: 44, marginLeft: 8 }}>🛒</Text>
+          </View>
+
+          <View style={[styles.promoCard, { backgroundColor: '#0284C7' }]}>
+            <View style={{ flex: 1 }}>
+              <View style={[styles.promoCodeBadge, { backgroundColor: '#E0F2FE' }]}>
+                <Text style={[styles.promoCodeText, { color: '#0369A1' }]}>10 MINS BREAKFAST</Text>
+              </View>
+              <Text style={styles.promoTitle}>Morning Dairy</Text>
+              <Text style={styles.promoSub}>Fresh Milk, Bread & Farm Eggs</Text>
+            </View>
+            <Text style={{ fontSize: 44, marginLeft: 8 }}>🥛</Text>
+          </View>
+
+          <View style={[styles.promoCard, { backgroundColor: '#16A34A' }]}>
+            <View style={{ flex: 1 }}>
+              <View style={[styles.promoCodeBadge, { backgroundColor: '#DCFCE7' }]}>
+                <Text style={[styles.promoCodeText, { color: '#15803D' }]}>FARM DIRECT</Text>
+              </View>
+              <Text style={styles.promoTitle}>Pure Organic</Text>
+              <Text style={styles.promoSub}>Handpicked fresh greens & veggies</Text>
+            </View>
+            <Text style={{ fontSize: 44, marginLeft: 8 }}>🥦</Text>
+          </View>
+        </ScrollView>
+
+        {/* Category Horizontal Filter Pills */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Explore Categories</Text>
         </View>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
+          {categories.map((cat) => {
+            const isSelected = selectedCategory === cat.name || (!selectedCategory && cat.name === 'All');
+            return (
+              <TouchableOpacity
+                key={cat.id || 'all'}
+                style={[styles.categoryChip, isSelected && styles.categoryChipActive]}
+                onPress={() => setSelectedCategory(cat.name === 'All' ? null : cat.name)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.categoryIcon}>{cat.icon}</Text>
+                <Text style={[styles.categoryLabel, isSelected && styles.categoryLabelActive]}>
+                  {cat.name}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+
+        {/* Stores Section Header */}
+        <View style={styles.sectionHeader}>
+          <View>
+            <Text style={styles.sectionTitle}>Featured Neighborhood Stores</Text>
+            <Text style={styles.sectionSubtitle}>FSSAI verified • 10-15 minute doorstep delivery</Text>
+          </View>
+          <Text style={styles.storeCountBadge}>{filteredStores.length} stores</Text>
+        </View>
+
+        {/* Store Cards */}
+        {filteredStores.map((store) => (
+          <TouchableOpacity
+            key={store.id}
+            style={styles.storeCard}
+            activeOpacity={0.9}
+            onPress={() => navigation?.navigate?.('StoreDetail', { storeId: store.id, storeName: store.name })}
+          >
+            <View style={styles.storeCardHeader}>
+              <View style={styles.storeAvatarBox}>
+                <Text style={{ fontSize: 32 }}>🏪</Text>
+              </View>
+
+              <View style={{ flex: 1, marginLeft: 12 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Text style={styles.storeName} numberOfLines={1}>{store.name}</Text>
+                  <View style={styles.ratingBadge}>
+                    <Text style={styles.ratingText}>⭐ {store.rating}</Text>
+                  </View>
+                </View>
+
+                <Text style={styles.storeAddress} numberOfLines={1}>{store.address}</Text>
+
+                <View style={styles.storeMetaRow}>
+                  <View style={styles.badgeEta}>
+                    <Text style={styles.badgeEtaText}>⚡ {store.deliveryTime} MINS</Text>
+                  </View>
+                  <Text style={styles.metaDot}>•</Text>
+                  <Text style={styles.metaDist}>📍 {store.distance} km</Text>
+                  <Text style={styles.metaDot}>•</Text>
+                  <View style={styles.badgeFreeDel}>
+                    <Text style={styles.badgeFreeDelText}>FREE DELIVERY</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            {/* Store Tags Bar */}
+            <View style={styles.tagsContainer}>
+              {store.tags?.map((t) => (
+                <View key={t} style={styles.tagPill}>
+                  <Text style={styles.tagText}>{t}</Text>
+                </View>
+              ))}
+            </View>
+          </TouchableOpacity>
+        ))}
+
+        <View style={{ height: 40 }} />
       </ScrollView>
     </View>
   );
-};
-
-// Styles
-const headerStyles = StyleSheet.create({
-  container: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start',
-    paddingHorizontal: Spacing.md, paddingTop: Spacing.xl, paddingBottom: Spacing.md,
-    backgroundColor: Colors.surface,
-  },
-  greeting: { fontSize: FontSize.sm, color: Colors.text.secondary, marginBottom: 4 },
-  locationRow: { flexDirection: 'row', alignItems: 'center' },
-  locationIcon: { fontSize: 16, marginRight: 4 },
-  locationText: { fontSize: FontSize.md, fontWeight: FontWeight.bold, color: Colors.text.primary },
-  chevron: { fontSize: 14, color: Colors.primary, marginLeft: 4 },
-  notifBtn: { padding: Spacing.xs },
-});
-
-const searchStyles = StyleSheet.create({
-  bar: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.surfaceSecondary,
-    borderRadius: BorderRadius.sm, paddingHorizontal: Spacing.sm, height: 48,
-    borderWidth: 1, borderColor: Colors.border,
-  },
-  icon: { fontSize: 18, marginRight: Spacing.xs },
-  placeholder: { fontSize: FontSize.base, color: Colors.text.tertiary },
-});
-
-const chipStyles = StyleSheet.create({
-  chip: {
-    flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs, borderRadius: BorderRadius.pill,
-    backgroundColor: Colors.surfaceSecondary, borderWidth: 1, borderColor: Colors.border,
-  },
-  icon: { fontSize: 16, marginRight: 4 },
-  label: { fontSize: FontSize.sm, fontWeight: FontWeight.medium, color: Colors.text.primary },
-});
-
-const cardStyles = StyleSheet.create({
-  card: {
-    flexDirection: 'row', backgroundColor: Colors.surface, borderRadius: BorderRadius.sm,
-    marginBottom: Spacing.md, ...Shadow.sm, overflow: 'hidden',
-  },
-  imagePlaceholder: {
-    width: 100, height: 100, backgroundColor: Colors.surfaceSecondary,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  info: { flex: 1, padding: Spacing.sm },
-  name: { fontSize: FontSize.md, fontWeight: FontWeight.semiBold, color: Colors.text.primary },
-  tags: { fontSize: FontSize.xs, color: Colors.text.tertiary, marginTop: 2 },
-  meta: { flexDirection: 'row', alignItems: 'center', marginTop: Spacing.xs },
-  rating: { fontSize: FontSize.xs, color: Colors.text.secondary },
-  dot: { color: Colors.text.tertiary },
-  time: { fontSize: FontSize.xs, color: Colors.text.secondary },
-  distance: { fontSize: FontSize.xs, color: Colors.text.secondary },
-  freeDelivery: { fontSize: FontSize.xs, color: Colors.status.success, marginTop: 4, fontWeight: FontWeight.medium },
-  deliveryFee: { fontSize: FontSize.xs, color: Colors.text.tertiary, marginTop: 4 },
-  closedBadge: {
-    position: 'absolute', top: Spacing.xs, right: Spacing.xs,
-    backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: BorderRadius.xs, paddingHorizontal: 6, paddingVertical: 2,
-  },
-  closedText: { color: '#FFF', fontSize: FontSize.xs, fontWeight: FontWeight.medium },
-});
+}
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.background },
-  banner: {
-    marginHorizontal: Spacing.md, marginBottom: Spacing.md,
-    backgroundColor: Colors.primary + '15', borderRadius: BorderRadius.sm,
-    padding: Spacing.sm, borderLeftWidth: 3, borderLeftColor: Colors.primary,
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
   },
-  bannerText: { fontSize: FontSize.sm, color: Colors.primary, fontWeight: FontWeight.medium },
+  logoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 4,
+  },
+  headerLogo: {
+    width: 140,
+    height: 40,
+  },
+  notifBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  topHeader: {
+    backgroundColor: '#0F172A',
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.md,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#1E293B',
+  },
+  locationContainer: {
+    flex: 1,
+  },
+  etaBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  pulseDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#22C55E',
+    marginRight: 6,
+  },
+  etaText: {
+    color: '#22C55E',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.8,
+  },
+  addressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  addressLabel: {
+    color: '#FFFFFF',
+    fontSize: FontSize.md,
+    fontWeight: FontWeight.bold,
+  },
+  addressChevron: {
+    color: Colors.primary,
+    fontSize: 14,
+    marginLeft: 6,
+    fontWeight: '700',
+  },
+  headerRightIcons: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+  },
+  iconCircle: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#1E293B',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scrollContent: {
+    paddingTop: Spacing.sm,
+  },
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: Spacing.md,
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: Spacing.md,
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    ...Shadow.xs,
+  },
+  searchIcon: {
+    fontSize: 16,
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: FontSize.sm,
+    color: Colors.text.primary,
+  },
+  clearSearchBtn: {
+    padding: 6,
+  },
+  trendingRow: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 10,
+    gap: 8,
+  },
+  trendingChip: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: BorderRadius.pill,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  trendingText: {
+    fontSize: 11,
+    color: '#475569',
+    fontWeight: '600',
+  },
+  promoBannersRow: {
+    paddingHorizontal: Spacing.md,
+    gap: 12,
+    marginBottom: Spacing.md,
+  },
+  promoCard: {
+    width: 280,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    ...Shadow.sm,
+  },
+  promoCodeBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 4,
+    alignSelf: 'flex-start',
+    marginBottom: 6,
+  },
+  promoCodeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  promoTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  promoSub: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 11,
+    marginTop: 2,
+    fontWeight: '500',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    paddingHorizontal: Spacing.md,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.xs,
+  },
   sectionTitle: {
-    fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: Colors.text.primary,
-    paddingHorizontal: Spacing.md, marginBottom: Spacing.sm, marginTop: Spacing.md,
+    fontSize: FontSize.base,
+    fontWeight: '800',
+    color: Colors.text.primary,
   },
-  storesSection: { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl },
-  loadingText: { textAlign: 'center', color: Colors.text.tertiary, marginTop: Spacing.xl },
-  emptyState: { alignItems: 'center', paddingVertical: Spacing.huge },
-  emptyIcon: { fontSize: 48, marginBottom: Spacing.md },
-  emptyText: { fontSize: FontSize.base, color: Colors.text.tertiary },
+  sectionSubtitle: {
+    fontSize: 11,
+    color: Colors.text.secondary,
+    marginTop: 2,
+  },
+  storeCountBadge: {
+    fontSize: 11,
+    color: '#64748B',
+    fontWeight: '600',
+  },
+  categoryScroll: {
+    paddingHorizontal: Spacing.md,
+    gap: 8,
+    paddingVertical: 10,
+  },
+  categoryChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.pill,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  categoryChipActive: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  categoryIcon: {
+    fontSize: 14,
+    marginRight: 6,
+  },
+  categoryLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#475569',
+  },
+  categoryLabelActive: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  storeCard: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: Spacing.md,
+    marginTop: 10,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    ...Shadow.sm,
+  },
+  storeCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  storeAvatarBox: {
+    width: 60,
+    height: 60,
+    borderRadius: BorderRadius.sm,
+    backgroundColor: '#F8FAFC',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  storeName: {
+    fontSize: FontSize.base,
+    fontWeight: '800',
+    color: Colors.text.primary,
+    flex: 1,
+    marginRight: 8,
+  },
+  ratingBadge: {
+    backgroundColor: '#FEF3C7',
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  ratingText: {
+    color: '#B45309',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  storeAddress: {
+    fontSize: 12,
+    color: Colors.text.secondary,
+    marginTop: 2,
+  },
+  storeMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  badgeEta: {
+    backgroundColor: '#FFF7ED',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  badgeEtaText: {
+    color: '#EA580C',
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  metaDot: {
+    color: '#CBD5E1',
+    marginHorizontal: 6,
+    fontSize: 10,
+  },
+  metaDist: {
+    color: '#64748B',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  badgeFreeDel: {
+    backgroundColor: '#ECFDF5',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  badgeFreeDelText: {
+    color: '#059669',
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#F8FAFC',
+  },
+  tagPill: {
+    backgroundColor: '#F1F5F9',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 4,
+  },
+  tagText: {
+    fontSize: 10,
+    color: '#475569',
+    fontWeight: '600',
+  },
 });
-
-export default HomeScreen;
-

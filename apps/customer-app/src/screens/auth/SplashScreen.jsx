@@ -1,28 +1,50 @@
-// Customer App — Splash Screen
+// Customer App — Professional Splash Screen with Official Logo
 
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, StatusBar } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { View, Text, StyleSheet, StatusBar, Image, ActivityIndicator } from 'react-native';
 
-const SplashScreen = ({ navigation }) => {
+const SplashScreen = ({ navigation, onComplete }) => {
   useEffect(() => {
-    // Auto-navigate after 2 seconds
-    // In real app: check token validity here
     const timer = setTimeout(() => {
-      navigation?.replace('Onboarding');
-    }, 2000);
+      if (onComplete) {
+        onComplete();
+      } else if (navigation?.replace) {
+        navigation.replace('Home');
+      }
+    }, 2200);
     return () => clearTimeout(timer);
-  }, []);
+  }, [navigation, onComplete]);
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
-      <View style={styles.logoContainer}>
-        <Text style={styles.logo}>🛒</Text>
-        <Text style={styles.appName}>QuickKart</Text>
-        <Text style={styles.tagline}>Deliver Everything Nearby</Text>
+      <StatusBar barStyle="light-content" backgroundColor="#0F172A" />
+      
+      <View style={styles.centerCard}>
+        {/* Official QuickKart Brand Logo */}
+        <Image
+          source={require('../../../assets/logo.png')}
+          style={styles.logoImage}
+          resizeMode="contain"
+        />
+        
+        <View style={styles.badgeRow}>
+          <View style={styles.badge}>
+            <Text style={styles.badgeDot}>⚡</Text>
+            <Text style={styles.badgeText}>HYPERLOCAL EXPRESS</Text>
+          </View>
+        </View>
+
+        <Text style={styles.subTagline}>
+          Groceries, Food & Essentials in 10-15 Minutes
+        </Text>
       </View>
-      <Text style={styles.version}>v1.0.0</Text>
+
+      {/* Bottom Loading Indicator & Version */}
+      <View style={styles.bottomSection}>
+        <ActivityIndicator size="small" color="#FF6B35" style={{ marginBottom: 12 }} />
+        <Text style={styles.loadingText}>Connecting to nearby stores...</Text>
+        <Text style={styles.versionText}>QuickKart v1.2.0 • Made with ❤️</Text>
+      </View>
     </View>
   );
 };
@@ -30,37 +52,69 @@ const SplashScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.primary,
+    backgroundColor: '#0F172A',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: 50,
+    paddingHorizontal: 24,
   },
-  logoContainer: {
-    alignItems: 'center',
+  centerCard: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
   },
-  logo: {
-    fontSize: 72,
+  logoImage: {
+    width: 280,
+    height: 100,
     marginBottom: 16,
   },
-  appName: {
-    fontSize: 36,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    letterSpacing: 1,
-  },
-  tagline: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
+  badgeRow: {
+    flexDirection: 'row',
     marginTop: 8,
-    fontWeight: '400',
   },
-  version: {
-    color: 'rgba(255,255,255,0.5)',
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 107, 53, 0.15)',
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 53, 0.3)',
+  },
+  badgeDot: {
     fontSize: 12,
-    marginBottom: 32,
+    marginRight: 6,
+  },
+  badgeText: {
+    color: '#FF6B35',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1.2,
+  },
+  subTagline: {
+    fontSize: 13,
+    color: '#94A3B8',
+    marginTop: 14,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  bottomSection: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  loadingText: {
+    fontSize: 12,
+    color: '#64748B',
+    marginBottom: 6,
+    fontWeight: '500',
+  },
+  versionText: {
+    fontSize: 11,
+    color: '#475569',
+    fontWeight: '600',
   },
 });
 
 export default SplashScreen;
-
